@@ -1,19 +1,20 @@
-# Project PROJECT_NAME
+# Project SHMUP Project
 
 [Markdown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet)
 
 ### Student Info
 
--   Name: YOUR NAME
--   Section: ##
+-   Name: Michael Eaton
+-   Section: IGME.202.01-02
 
 ## Game Design
 
--   Camera Orientation: _How are the art assets viewed from? (ie. topdown or side)_
--   Camera Movement: _How does the camera move in your game? (if at all)_
--   Player Health: _How are you handling player health? (healthbar, lives, ?)_
--   End Condition: _How does a game/round/level end?_
--   Scoring: _How does the player earn points in your game?_
+-   Camera Orientation: top down
+-   Camera Movement: No camera movement
+-   Player Health: Healthbar and Lives
+-   End Condition: each level has a preset number or pattern of enemies, buy upgrades in between levels,
+		boss ends the game, player out of lives ends the game
+-   Scoring: Killing enemies awards coins that can be spent on upgrades as well as giving a score to the player
 
 ### Game Description
 
@@ -22,11 +23,11 @@ _A brief explanation of your game. Inculde what is the objective for the player.
 ### Controls
 
 -   Movement
-    -   Up: 
-    -   Down: 
-    -   Left: 
-    -   Right: 
--   Fire: 
+    -   Up: W
+    -   Down: S 
+    -   Left: A
+    -   Right: D
+-   Fire: Space
 
 ## You Additions
 
