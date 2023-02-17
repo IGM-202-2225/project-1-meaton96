@@ -1,6 +1,0 @@
-theme:        jekyll-theme-slate
-
-plugins:
-  - "jekyll-github-metadata"
-
-title:        IGME 202 Exercises
