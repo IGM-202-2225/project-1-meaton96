@@ -13,7 +13,7 @@ public class GameController : MonoBehaviour
         for (int x = 0; x < 6; x++) {
             Vector3 pos = new(startingPosX + x * 2.5f, 0, 0);
             GameObject enemy = Instantiate(enemyPreFab, pos, Quaternion.identity);
-            enemy.GetComponent<EnemyBehaviour>().SetShipType(x);
+            enemy.GetComponent<EnemyBehaviour>().Init(x);
             enemies.Add(enemy);
 
         }
