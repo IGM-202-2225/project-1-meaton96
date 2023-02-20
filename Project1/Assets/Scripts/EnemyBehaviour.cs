@@ -8,6 +8,7 @@ using UnityEngine;
 public class EnemyBehaviour : MonoBehaviour {
 
     private const float RADIUS_1 = .7f;
+    public float scale = .7f;
     private const float VERTICAL_ROW_SEPERATION = 3;
     private const string ANIMATOR_EXPLODE_TRIGGER = "explode";
     private const int ANIMATION_FRAMES = 9;
@@ -15,7 +16,7 @@ public class EnemyBehaviour : MonoBehaviour {
     private Animator animator;
     private float maxX, maxY;
     private bool right;
-    [SerializeField] private float speed;
+    private float speed;
     private SpriteRenderer sr;
     // Start is called before the first frame update
     void Start() {
@@ -34,20 +35,31 @@ public class EnemyBehaviour : MonoBehaviour {
         //needs adjusting if enemy goes too far off screen
         transform.position += (right ? Vector3.right : Vector3.left) * Time.deltaTime * speed;
         if (sr.bounds.max.x >= maxX || sr.bounds.min.x <= -maxX) {
+            float xOffsetOnRowChange = .1f;
+            if (right)
+                xOffsetOnRowChange = -xOffsetOnRowChange;
             right = !right;
-            transform.position = new Vector3(transform.position.x,
+            transform.position = new Vector3(transform.position.x + xOffsetOnRowChange,
                 transform.position.y - VERTICAL_ROW_SEPERATION, 0);
         }
     }
 
-    public void Init(int type) {
+
+    public void Init(int type, int speed, bool right) {
+        transform.localScale = new Vector3(scale, scale, scale);
+        this.right = right; 
         animator = GetComponent<Animator>();
         isAlive = true;
         sr = GetComponent<SpriteRenderer>();
-        right = true;
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y);
         animator.SetTrigger("ship" + type);
+        this.speed = speed;
+        Debug.Log(transform.localScale);
+    }
+    public void Init(int type, int speed, bool right, float scale) {
+        this.scale = scale;
+        Init(type, speed, right);
     }
 
     public bool CheckCollision(float radius, Vector3 center) {
@@ -62,7 +74,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
         if (Mathf.Pow(transform.position.x - center.x, 2) +
             Mathf.Pow(transform.position.y - center.y, 2) <=
-            Mathf.Pow(RADIUS_1 + radius, 2)) {
+            Mathf.Pow(RADIUS_1 * scale + radius, 2)) {
             return true;
         }
         return false;

@@ -45,7 +45,7 @@ public class BulletBehaviour : MonoBehaviour
                     enemyScript.Explode();
                     enemyList.Remove(enemy);
                     Destroy(gameObject);
-                    break;
+                    break;  
                 }
             }
         }
