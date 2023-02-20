@@ -29,7 +29,7 @@ public class PlayerBehaviour : MonoBehaviour
 
         sr = GetComponent<SpriteRenderer>();
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
-        maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y);
+        maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) - 4;
 
         switch (shipType) {
             case 0:sr.sprite = shipSprites[0]; 
@@ -53,8 +53,7 @@ public class PlayerBehaviour : MonoBehaviour
             shootCount += Time.deltaTime;
     }
     public void HitByBullet(int damage) {
-        currentHealth -= damage;
-        Debug.Log("player health: " + currentHealth);
+        currentHealth -= damage;    
     }
     public bool CheckCollision(GameObject bullet) {
         if (!bullet.TryGetComponent<EnemyBulletBehaviour>(out _))
@@ -63,8 +62,7 @@ public class PlayerBehaviour : MonoBehaviour
         if (Mathf.Pow(transform.position.x - bulletPos.x, 2) +
             Mathf.Pow(transform.position.y - bulletPos.y + EnemyBulletBehaviour.HIT_BOX_OFFSET_Y, 2) <=
             Mathf.Pow(firstRadius + EnemyBulletBehaviour.HIT_BOX_RADIUS, 2)) {
-            Debug.Log("First raiud hit");
-            return CheckSecondCollision(bullet);
+                return CheckSecondCollision(bullet);
         }
         return false;
     }
