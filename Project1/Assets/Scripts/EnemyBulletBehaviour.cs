@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class BulletBehaviour : MonoBehaviour
+public class EnemyBulletBehaviour : MonoBehaviour
 {
-    private const float HIT_BOX_OFFSET_Y = -.05f, HIT_BOX_RADIUS = .05f;
+    public const float HIT_BOX_OFFSET_Y = .2f, HIT_BOX_RADIUS = .2f;
     [SerializeField] private float speed;
     [SerializeField] private float angle;
     //private bool firedByPlayer;
@@ -21,7 +21,7 @@ public class BulletBehaviour : MonoBehaviour
     void Update()
     {
         CheckCollisions();
-        transform.position += new Vector3(
+        transform.position -= new Vector3(
             speed * Time.deltaTime * Mathf.Sin(angle),
             speed * Time.deltaTime * Mathf.Cos(angle),
             0);
@@ -37,20 +37,15 @@ public class BulletBehaviour : MonoBehaviour
     
 
     void CheckCollisions() {
-            List<GameObject> enemyList = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().enemies;
-            
-            foreach (GameObject enemy in enemyList) {
-                EnemyBehaviour enemyScript = enemy.GetComponent<EnemyBehaviour>();
-                Vector3 bulletPos = new(transform.position.x, transform.position.y + HIT_BOX_OFFSET_Y, 0);
-                if (enemyScript.CheckCollision(HIT_BOX_RADIUS, bulletPos)) {
 
-                    enemyScript.health -= damage;
-                    if (enemyScript.isAlive)
-                        enemyList.Remove(enemy);
-                    Destroy(gameObject);
-                    break;  
-                }
-            }
-        
+        PlayerBehaviour playerScript = GameObject.FindGameObjectWithTag("GameController").
+            GetComponent<GameController>().
+            player.GetComponent<PlayerBehaviour>();
+
+        if (playerScript.CheckCollision(gameObject)) {
+            playerScript.HitByBullet(damage);
+            Destroy(gameObject);
+        }
+
     }
 }

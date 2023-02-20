@@ -8,9 +8,10 @@ public class GameController : MonoBehaviour {
     [SerializeField] private GameObject enemyPreFab;
     [SerializeField] private float defaultEnemyXOffset;
     private int numEnemiesSpawned = 0;
+    public GameObject player;
     // Start is called before the first frame update
     void Start() {
-        SpawnDefaultEnemyWave(0, 50, 5);
+        SpawnDefaultEnemyWave(0, 1, 1);
     }
     void SpawnDefaultEnemyWave(int enemyType, int numEnemies, int numRowsAtOnce) {
 
@@ -36,7 +37,7 @@ public class GameController : MonoBehaviour {
 
     private void SpawnEnemy(int enemyType, Vector3 pos, bool right, float scale) {
         GameObject enemy = Instantiate(enemyPreFab, pos, Quaternion.identity);
-        enemy.GetComponent<EnemyBehaviour>().Init(enemyType, 4, right, scale);
+        enemy.GetComponent<EnemyBehaviour>().Init(enemyType, 4, right, scale, 1);
         enemies.Add(enemy);
         ++numEnemiesSpawned;
     }

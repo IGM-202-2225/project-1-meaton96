@@ -1,4 +1,4 @@
-using System;
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -8,25 +8,48 @@ using UnityEngine;
 public class EnemyBehaviour : MonoBehaviour {
 
     private const float RADIUS_1 = .7f;
+    private const float DEFAULT_SHOOT_DELAY = 3f;
     public float scale = .7f;
     private const float VERTICAL_ROW_SEPERATION = 3;
     private const string ANIMATOR_EXPLODE_TRIGGER = "explode";
     private const int ANIMATION_FRAMES = 9;
-    private bool isAlive;
+    public bool isAlive;
     private Animator animator;
     private float maxX, maxY;
     private bool right;
     private float speed;
     private SpriteRenderer sr;
+    public int damage;
+    public int health;
+    private float shootTimer = 0f, shootDelay;
+    [SerializeField] private GameObject bulletPrefab;
     // Start is called before the first frame update
     void Start() {
-        
+
 
     }
-    
+
     // Update is called once per frame
     void Update() {
-        DefaultLateralMovement();
+        //DefaultLateralMovement();
+        if (health <= 0) {
+            isAlive = false;
+            animator.SetTrigger(ANIMATOR_EXPLODE_TRIGGER);
+        }
+        if (shootTimer >= shootDelay) {
+            Shoot();
+            shootTimer = 0;
+        }
+        else {
+            shootTimer += Time.deltaTime;
+        }
+
+    }
+    void Shoot() {
+        Vector3 pos = new(transform.position.x, transform.position.y - 1, 0);
+        GameObject bullet = Instantiate(bulletPrefab, pos, Quaternion.identity);
+        bullet.GetComponent<EnemyBulletBehaviour>().Init(damage);
+
     }
 
     private void DefaultLateralMovement() {
@@ -42,9 +65,11 @@ public class EnemyBehaviour : MonoBehaviour {
     }
 
 
-    public void Init(int type, int speed, bool right) {
+    public void Init(int type, int speed, bool right, int damage) {
+
         transform.localScale = new Vector3(scale, scale, scale);
-        this.right = right; 
+        this.right = right;
+        health = 1;
         animator = GetComponent<Animator>();
         isAlive = true;
         sr = GetComponent<SpriteRenderer>();
@@ -52,10 +77,13 @@ public class EnemyBehaviour : MonoBehaviour {
         maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y);
         animator.SetTrigger("ship" + type);
         this.speed = speed;
+        this.damage = damage;
+        shootDelay = Random.Range(0, DEFAULT_SHOOT_DELAY / (type + 1));
+
     }
-    public void Init(int type, int speed, bool right, float scale) {
+    public void Init(int type, int speed, bool right, float scale, int damage) {
         this.scale = scale;
-        Init(type, speed, right);
+        Init(type, speed, right, damage);
     }
 
     public bool CheckCollision(float radius, Vector3 center) {
@@ -65,7 +93,7 @@ public class EnemyBehaviour : MonoBehaviour {
             return false;
         if (center == null)
             return false;
-        if (radius <= 0) 
+        if (radius <= 0)
             return false;
 
         if (Mathf.Pow(transform.position.x - center.x, 2) +
@@ -76,10 +104,6 @@ public class EnemyBehaviour : MonoBehaviour {
         return false;
     }
 
-    public void Explode() {
-        isAlive = false;
-        animator.SetTrigger(ANIMATOR_EXPLODE_TRIGGER);
-    }
     public void FinishExplode() {
         Destroy(gameObject);
     }

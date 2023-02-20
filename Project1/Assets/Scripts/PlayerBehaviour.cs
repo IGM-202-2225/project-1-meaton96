@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerBehaviour : MonoBehaviour
@@ -14,6 +15,12 @@ public class PlayerBehaviour : MonoBehaviour
     [SerializeField] private float bulletSpawnOffset;
     [SerializeField] private float shootDelay = .2f;
     private float shootCount = 0;
+    public float firstRadius = 1f, secondRadius = 0.4f;
+    public float firstRadiusYOffset = .5f;
+    public float secondRadiusXOffset = .1f;
+    public float thirdRadiusYOffset = -0.4f, thirdRadiusXOffset = 0.25f;
+    public int currentHealth = 10;
+    public int maxHealth = 10;
 
     // Start is called before the first frame update
     void Start()
@@ -45,10 +52,48 @@ public class PlayerBehaviour : MonoBehaviour
         else
             shootCount += Time.deltaTime;
     }
+    public void HitByBullet(int damage) {
+        currentHealth -= damage;
+        Debug.Log("player health: " + currentHealth);
+    }
+    public bool CheckCollision(GameObject bullet) {
+        if (!bullet.TryGetComponent<EnemyBulletBehaviour>(out _))
+            return false;
+        Vector3 bulletPos = bullet.transform.position;
+        if (Mathf.Pow(transform.position.x - bulletPos.x, 2) +
+            Mathf.Pow(transform.position.y - bulletPos.y + EnemyBulletBehaviour.HIT_BOX_OFFSET_Y, 2) <=
+            Mathf.Pow(firstRadius + EnemyBulletBehaviour.HIT_BOX_RADIUS, 2)) {
+            Debug.Log("First raiud hit");
+            return CheckSecondCollision(bullet);
+        }
+        return false;
+    }
+    private bool CheckSecondCollision(GameObject bullet) {
+        Vector3 bulletPos = new(bullet.transform.position.x,
+            bullet.transform.position.y + EnemyBulletBehaviour.HIT_BOX_OFFSET_Y,
+            0);
+
+        Vector3[] hitBoxCenters = new Vector3[5];
+        hitBoxCenters[0] = new Vector3(transform.position.x,
+            transform.position.y + firstRadiusYOffset, 0);
+        hitBoxCenters[1] = new Vector3(transform.position.x + secondRadiusXOffset, transform.position.y, 0);
+        hitBoxCenters[2] = new Vector3(transform.position.x - secondRadiusXOffset, transform.position.y, 0);
+        hitBoxCenters[3] = new Vector3(transform.position.x + thirdRadiusXOffset, transform.position.y + thirdRadiusYOffset, 0);
+        hitBoxCenters[4] = new Vector3(transform.position.x - thirdRadiusXOffset, transform.position.y + thirdRadiusYOffset, 0);
+
+        for (int x = 0; x < hitBoxCenters.Length; x++) {
+            if (Mathf.Pow(hitBoxCenters[x].x - bulletPos.x, 2) +
+                Mathf.Pow(hitBoxCenters[x].y - bulletPos.y, 2) <=
+                Mathf.Pow(EnemyBulletBehaviour.HIT_BOX_RADIUS + secondRadius, 2))
+                return true;
+        }
+
+        return false;
+    }
 
     void Shoot() {
         GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-        bullet.GetComponent<BulletBehaviour>().Init(true);
+        bullet.GetComponent<BulletBehaviour>().Init(1);
 
     }
 
