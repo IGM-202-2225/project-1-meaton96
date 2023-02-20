@@ -23,16 +23,13 @@ public class EnemyBehaviour : MonoBehaviour {
         
 
     }
-    public void Init() {
-        
-    }
+    
     // Update is called once per frame
     void Update() {
         DefaultLateralMovement();
     }
 
     private void DefaultLateralMovement() {
-        //needs adjusting if enemy goes too far off screen
         transform.position += (right ? Vector3.right : Vector3.left) * Time.deltaTime * speed;
         if (sr.bounds.max.x >= maxX || sr.bounds.min.x <= -maxX) {
             float xOffsetOnRowChange = .1f;
@@ -55,7 +52,6 @@ public class EnemyBehaviour : MonoBehaviour {
         maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y);
         animator.SetTrigger("ship" + type);
         this.speed = speed;
-        Debug.Log(transform.localScale);
     }
     public void Init(int type, int speed, bool right, float scale) {
         this.scale = scale;
