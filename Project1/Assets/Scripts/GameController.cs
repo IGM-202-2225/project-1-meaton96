@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
+
 
 public class GameController : MonoBehaviour {
     public List<GameObject> enemies = new();
@@ -11,7 +11,7 @@ public class GameController : MonoBehaviour {
     public GameObject player;
     // Start is called before the first frame update
     void Start() {
-        SpawnDefaultEnemyWave(0, 1, 1);
+        SpawnDefaultEnemyWave(0, 5, 1);
     }
     void SpawnDefaultEnemyWave(int enemyType, int numEnemies, int numRowsAtOnce) {
 

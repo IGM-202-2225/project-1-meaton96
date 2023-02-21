@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 50402443}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -236,6 +236,8 @@ MonoBehaviour:
   secondRadiusXOffset: 0.1
   thirdRadiusYOffset: -0.4
   thirdRadiusXOffset: 0.25
+  currentHealth: 10
+  maxHealth: 10
 --- !u!1 &273104404
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,7 +637,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 20.125, y: 2.95}
+  m_AnchoredPosition: {x: 16.049, y: 2.958}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &898040214
@@ -770,6 +772,7 @@ GameObject:
   - component: {fileID: 1685422359}
   - component: {fileID: 1685422358}
   - component: {fileID: 1685422357}
+  - component: {fileID: 1685422361}
   m_Layer: 5
   m_Name: UserInterface
   m_TagString: Untagged
@@ -860,3 +863,16 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -8}
   m_SizeDelta: {x: 40.25, y: 4}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1685422361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1685422356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0ae917b4099c334c8bf12c3d14f7785, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBar: {fileID: 898040212}
