@@ -10,7 +10,7 @@ public class PlayerBehaviour : MonoBehaviour
     [SerializeField] private float lateralSpeed, verticalSpeed;
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Sprite[] shipSprites = new Sprite[3];
-    private int shipType;
+    public int shipType;
     private SpriteRenderer sr;
     private float maxX, maxY;
     [SerializeField] private float bulletSpawnOffset;
@@ -103,6 +103,15 @@ public class PlayerBehaviour : MonoBehaviour
         bullet.GetComponent<BulletBehaviour>().Init(1);
 
     }
+    public IEnumerator Respawn() {
+
+        for (int x = 0; x < 6; x++) {
+            Color color = sr.color;
+            color.a = color.a == 0 ? 255f : 0f;
+            yield return new WaitForSeconds(0.5f);
+        }
+        currentHealth = maxHealth;
+    }
 
     void HandlePlayerMovement() {
 
@@ -128,5 +137,6 @@ public class PlayerBehaviour : MonoBehaviour
     public void AddToCoins(int numCoins) {
         coins += numCoins;
     }
+    public int Lives { get { return lives; } }
     
 }

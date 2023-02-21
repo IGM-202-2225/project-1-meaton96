@@ -8,13 +8,14 @@ public class GameController : MonoBehaviour {
     public List<GameObject> enemies = new();
     [SerializeField] private GameObject enemyPreFab;
     [SerializeField] private float defaultEnemyXOffset;
+    private Vector2 playerSpawn;
     public GameObject player;
     private PlayerBehaviour playerScript;
     private int enemyType = 0;
     // Start is called before the first frame update
     void Start() {
         playerScript = player.GetComponent<PlayerBehaviour>();
-
+        playerSpawn = new Vector2(0f, -3f);
     }
     void SpawnDefaultEnemyWave(int enemyType, int numEnemies, int numRowsAtOnce) {
 
@@ -52,7 +53,9 @@ public class GameController : MonoBehaviour {
                 //end game screen
             }
             playerScript.DecrementLives();
-            playerScript.currentHealth = playerScript.maxHealth;
+            
+            player.transform.position = playerSpawn;
+            
         }
         if (!enemies.Any()) {
             SpawnDefaultEnemyWave(enemyType++, 10, 2);
