@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -7,20 +8,22 @@ public class GameController : MonoBehaviour {
     public List<GameObject> enemies = new();
     [SerializeField] private GameObject enemyPreFab;
     [SerializeField] private float defaultEnemyXOffset;
-    private int numEnemiesSpawned = 0;
     public GameObject player;
+    private PlayerBehaviour playerScript;
+    private int enemyType = 0;
     // Start is called before the first frame update
     void Start() {
-        SpawnDefaultEnemyWave(0, 5, 1);
+        playerScript = player.GetComponent<PlayerBehaviour>();
+
     }
     void SpawnDefaultEnemyWave(int enemyType, int numEnemies, int numRowsAtOnce) {
 
         int numEnemiesPerRow = numEnemies / numRowsAtOnce;
 
-        float spawnX = (numEnemiesPerRow * defaultEnemyXOffset) / -2;
+        float spawnX = numEnemiesPerRow * defaultEnemyXOffset / -2;
         Vector3 spawnPoint = new(
             spawnX,
-            Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) - 1,
+            Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) + numRowsAtOnce - 2,
             0f);
         
 
@@ -39,11 +42,21 @@ public class GameController : MonoBehaviour {
         GameObject enemy = Instantiate(enemyPreFab, pos, Quaternion.identity);
         enemy.GetComponent<EnemyBehaviour>().Init(enemyType, 4, right, scale, 1);
         enemies.Add(enemy);
-        ++numEnemiesSpawned;
     }
 
     // Update is called once per frame
     void Update() {
-
+        if (!playerScript.IsAlive()) {
+            if (playerScript.OutOfLives()) {
+                Time.timeScale = 0f;
+                //end game screen
+            }
+            playerScript.DecrementLives();
+            playerScript.currentHealth = playerScript.maxHealth;
+        }
+        if (!enemies.Any()) {
+            SpawnDefaultEnemyWave(enemyType++, 10, 2);
+            //shop screen
+        }
     }
 }

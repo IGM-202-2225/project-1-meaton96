@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -21,12 +22,17 @@ public class PlayerBehaviour : MonoBehaviour
     public float thirdRadiusYOffset = -0.4f, thirdRadiusXOffset = 0.25f;
     public int currentHealth = 10;
     public int maxHealth = 10;
+    public int score;
+    private int lives;
+    public int coins;
+
 
     // Start is called before the first frame update
     void Start()
     {
         shipType = 0;
-
+        lives = 3;
+        coins = 0;
         sr = GetComponent<SpriteRenderer>();
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) - 4;
@@ -41,6 +47,9 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
+    public void AddToScore(int n) {
+        score += n;
+    }
     // Update is called once per frame
     void Update()   
     {
@@ -110,6 +119,14 @@ public class PlayerBehaviour : MonoBehaviour
             transform.position += verticalSpeed * Time.deltaTime * Vector3.up;
         }
         
+    }
+    public bool IsAlive() { return currentHealth > 0; }
+    public void DecrementLives() { lives--; }
+    public void IncrementLives() { lives++; }
+    public void ResetLives() { lives = 3; }
+    public bool OutOfLives() { return lives <= 0; }
+    public void AddToCoins(int numCoins) {
+        coins += numCoins;
     }
     
 }
