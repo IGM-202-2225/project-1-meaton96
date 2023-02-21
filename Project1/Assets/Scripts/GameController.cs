@@ -47,14 +47,15 @@ public class GameController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (!playerScript.IsAlive()) {
+        if (!playerScript.IsAlive() && playerScript.isSpawning) {
             if (playerScript.OutOfLives()) {
                 Time.timeScale = 0f;
                 //end game screen
             }
-            playerScript.DecrementLives();
+            
             
             player.transform.position = playerSpawn;
+            StartCoroutine(playerScript.Respawn());
             
         }
         if (!enemies.Any()) {

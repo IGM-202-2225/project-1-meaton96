@@ -25,6 +25,7 @@ public class PlayerBehaviour : MonoBehaviour
     public int score;
     private int lives;
     public int coins;
+    public bool isSpawning = false;
 
 
     // Start is called before the first frame update
@@ -36,6 +37,8 @@ public class PlayerBehaviour : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) - 4;
+
+        currentHealth = 1; //remove
 
         switch (shipType) {
             case 0:sr.sprite = shipSprites[0]; 
@@ -103,14 +106,19 @@ public class PlayerBehaviour : MonoBehaviour
         bullet.GetComponent<BulletBehaviour>().Init(1);
 
     }
+
+    //not working
     public IEnumerator Respawn() {
 
+        isSpawning = true;
         for (int x = 0; x < 6; x++) {
             Color color = sr.color;
             color.a = color.a == 0 ? 255f : 0f;
             yield return new WaitForSeconds(0.5f);
         }
         currentHealth = maxHealth;
+        isSpawning = false;
+        DecrementLives();
     }
 
     void HandlePlayerMovement() {
