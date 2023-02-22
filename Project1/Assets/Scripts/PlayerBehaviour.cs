@@ -4,8 +4,7 @@ using System.Runtime.InteropServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerBehaviour : MonoBehaviour
-{
+public class PlayerBehaviour : MonoBehaviour {
     [SerializeField] private GameObject bgControl;
     [SerializeField] private float lateralSpeed, verticalSpeed;
     [SerializeField] private GameObject bulletPrefab;
@@ -20,7 +19,7 @@ public class PlayerBehaviour : MonoBehaviour
     public float firstRadiusYOffset = .5f;
     public float secondRadiusXOffset = .1f;
     public float thirdRadiusYOffset = -0.4f, thirdRadiusXOffset = 0.25f;
-    public int currentHealth = 10;
+    public int currentHealth;
     public int maxHealth = 10;
     public int score;
     private int lives;
@@ -28,12 +27,12 @@ public class PlayerBehaviour : MonoBehaviour
     public bool isSpawning = false;
     public int numBulletsFired;
     public float bulletSpreadAngle = 10f;
-    public float AttackSpeed { get {  return 1 / attackDelay; } }
+    public int damageDone = 1;
+    public float AttackSpeed { get { return 1 / attackDelay; } }
 
     // Start is called before the first frame update
-    void Start()
-    {
-        numBulletsFired = 5;
+    void Start() {
+        numBulletsFired = 4;
         shipType = 0;
         lives = 3;
         coins = 0;
@@ -41,14 +40,17 @@ public class PlayerBehaviour : MonoBehaviour
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) - 4;
 
-        currentHealth = 1; //remove
+        currentHealth = maxHealth;
 
         switch (shipType) {
-            case 0:sr.sprite = shipSprites[0]; 
+            case 0:
+                sr.sprite = shipSprites[0];
                 break;
-            case 1: sr.sprite = shipSprites[1];
+            case 1:
+                sr.sprite = shipSprites[1];
                 break;
-            case 2: sr.sprite = shipSprites[2];
+            case 2:
+                sr.sprite = shipSprites[2];
                 break;
         }
     }
@@ -57,8 +59,7 @@ public class PlayerBehaviour : MonoBehaviour
         score += n;
     }
     // Update is called once per frame
-    void Update()   
-    {
+    void Update() {
         HandlePlayerMovement();
         if (Input.GetKey(KeyCode.Space) && shootCount > attackDelay) {
             Shoot();
@@ -68,7 +69,7 @@ public class PlayerBehaviour : MonoBehaviour
             shootCount += Time.deltaTime;
     }
     public void HitByBullet(int damage) {
-        currentHealth -= damage;    
+        currentHealth -= damage;
     }
     public bool CheckCollision(GameObject bullet) {
         if (!bullet.TryGetComponent<EnemyBulletBehaviour>(out _))
@@ -77,7 +78,7 @@ public class PlayerBehaviour : MonoBehaviour
         if (Mathf.Pow(transform.position.x - bulletPos.x, 2) +
             Mathf.Pow(transform.position.y - bulletPos.y + EnemyBulletBehaviour.HIT_BOX_OFFSET_Y, 2) <=
             Mathf.Pow(firstRadius + EnemyBulletBehaviour.HIT_BOX_RADIUS, 2)) {
-                return CheckSecondCollision(bullet);
+            return CheckSecondCollision(bullet);
         }
         return false;
     }
@@ -103,27 +104,38 @@ public class PlayerBehaviour : MonoBehaviour
 
         return false;
     }
-
+    //creates bullet objects for each bullet shot
+    //sets the angle and inits the bullet with the angle and damage done
     void Shoot() {
         float angle;
+        
         for (int x = 0; x < numBulletsFired; x++) {
-            if (x == 0)
-                angle = 0;
-            else if (x % 2 != 0) {
-                angle = bulletSpreadAngle * (x + 1) / 2;
+            if (numBulletsFired % 2 != 0) {
+                if (x == 0)
+                    angle = 0;
+                else if (x % 2 != 0) {
+                    angle = bulletSpreadAngle * (x + 1) / 2;
+                }
+                else
+                    angle = -bulletSpreadAngle * x / 2;
             }
-            else
-                angle = -bulletSpreadAngle * x / 2;
+            else {
+                if (x % 2 == 0) {
+                    angle = -bulletSpreadAngle * (x + 1) / 2;
+                }
+                else
+                    angle = bulletSpreadAngle * x / 2;
+            }
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.Euler(new Vector3(0f, 0f, -angle)));
-            bullet.GetComponent<BulletBehaviour>().Init(1, ToRadians(angle));
+            bullet.GetComponent<BulletBehaviour>().Init(damageDone, ToRadians(angle));
         }
 
-        
-        
+
+
 
     }
     private float ToRadians(float angle) {
-        return angle / 180 * Mathf.PI; 
+        return angle / 180 * Mathf.PI;
     }
 
     //respawns the player
@@ -144,7 +156,7 @@ public class PlayerBehaviour : MonoBehaviour
     void HandlePlayerMovement() {
 
         if (Input.GetKey(KeyCode.A) && sr.bounds.min.x >= -maxX) {
-            transform.position += lateralSpeed * Time.deltaTime * Vector3.left; 
+            transform.position += lateralSpeed * Time.deltaTime * Vector3.left;
         }
         if (Input.GetKey(KeyCode.S) && sr.bounds.min.y >= -maxY) {
             transform.position += verticalSpeed * Time.deltaTime * Vector3.down;
@@ -155,7 +167,7 @@ public class PlayerBehaviour : MonoBehaviour
         if (Input.GetKey(KeyCode.W) && sr.bounds.max.y <= maxY) {
             transform.position += verticalSpeed * Time.deltaTime * Vector3.up;
         }
-        
+
     }
     public bool IsAlive() { return currentHealth > 0; }
     public void DecrementLives() { lives--; }
@@ -166,5 +178,5 @@ public class PlayerBehaviour : MonoBehaviour
         coins += numCoins;
     }
     public int Lives { get { return lives; } }
-    
+
 }
