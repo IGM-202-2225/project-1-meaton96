@@ -14,7 +14,7 @@ public class PlayerBehaviour : MonoBehaviour
     private SpriteRenderer sr;
     private float maxX, maxY;
     [SerializeField] private float bulletSpawnOffset;
-    [SerializeField] private float shootDelay = .2f;
+    [SerializeField] private float attackDelay = .5f;
     private float shootCount = 0;
     public float firstRadius = 1f, secondRadius = 0.4f;
     public float firstRadiusYOffset = .5f;
@@ -26,11 +26,14 @@ public class PlayerBehaviour : MonoBehaviour
     private int lives;
     public int coins;
     public bool isSpawning = false;
-
+    public int numBulletsFired;
+    public float bulletSpreadAngle = 10f;
+    public float AttackSpeed { get {  return 1 / attackDelay; } }
 
     // Start is called before the first frame update
     void Start()
     {
+        numBulletsFired = 5;
         shipType = 0;
         lives = 3;
         coins = 0;
@@ -57,7 +60,7 @@ public class PlayerBehaviour : MonoBehaviour
     void Update()   
     {
         HandlePlayerMovement();
-        if (Input.GetKey(KeyCode.Space) && shootCount > shootDelay) {
+        if (Input.GetKey(KeyCode.Space) && shootCount > attackDelay) {
             Shoot();
             shootCount = 0;
         }
@@ -102,29 +105,46 @@ public class PlayerBehaviour : MonoBehaviour
     }
 
     void Shoot() {
-        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-        bullet.GetComponent<BulletBehaviour>().Init(1);
+        float angle;
+        for (int x = 0; x < numBulletsFired; x++) {
+            if (x == 0)
+                angle = 0;
+            else if (x % 2 != 0) {
+                angle = bulletSpreadAngle * (x + 1) / 2;
+            }
+            else
+                angle = -bulletSpreadAngle * x / 2;
+            GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.Euler(new Vector3(0f, 0f, -angle)));
+            bullet.GetComponent<BulletBehaviour>().Init(1, ToRadians(angle));
+        }
+
+        
+        
 
     }
+    private float ToRadians(float angle) {
+        return angle / 180 * Mathf.PI; 
+    }
 
-    //not working
+    //respawns the player
     public IEnumerator Respawn() {
-
-        isSpawning = true;
-        for (int x = 0; x < 6; x++) {
+        isSpawning = true;                              //set spawning flag
+        for (int x = 0; x < 12; x++) {
             Color color = sr.color;
-            color.a = color.a == 0 ? 255f : 0f;
-            yield return new WaitForSeconds(0.5f);
+            color.a = color.a == 0 ? 255f : 0;
+            sr.color = color;
+            yield return new WaitForSeconds(0.25f);     //alternates every .25seconds between 0 and 255 alpha for 3 seconds
         }
-        currentHealth = maxHealth;
-        isSpawning = false;
-        DecrementLives();
+        currentHealth = maxHealth;  //reset health
+        isSpawning = false;         //clear flag
+        DecrementLives();           //lose a life
+        yield return null;          //exit coroutine
     }
 
     void HandlePlayerMovement() {
 
         if (Input.GetKey(KeyCode.A) && sr.bounds.min.x >= -maxX) {
-            transform.position += lateralSpeed * Time.deltaTime * Vector3.left;
+            transform.position += lateralSpeed * Time.deltaTime * Vector3.left; 
         }
         if (Input.GetKey(KeyCode.S) && sr.bounds.min.y >= -maxY) {
             transform.position += verticalSpeed * Time.deltaTime * Vector3.down;

@@ -42,7 +42,7 @@ public class UIBehaviour : MonoBehaviour {
         }
         scoreText.text = playerScript.score + "";
         coinText.text = playerScript.coins + "";
-        Debug.Log(playerScript.Lives);
+        
         if (playerScript.Lives > 0) {
             if (lives.Count != playerScript.Lives) {
                 while (lives.Count > playerScript.Lives) {

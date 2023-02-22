@@ -29,14 +29,23 @@ _A brief explanation of your game. Inculde what is the objective for the player.
     -   Right: D
 -   Fire: Space
 
-## You Additions
+## Your Additions
 
-_List out what you added to your game to make it different for you_
+Documentation:
+Player movement: as above, when coming into contact with edges of the screen player movement is halted
+Player has a healthbar and lives, when your health runs out you will respawn at the bottom center of the screen and will be immune for 3 seconds,
+Player shooting delay: there is a time delay between allowing the player to shoot, starting at .2 seconds, this is done with a simple timer float by increasing it by Time.deltaTime
+
+Enemy types:
+currently 5 simple enemy types, each type has increasing amount of health and rate of fire (NYI)
+bosses (NYI)
 
 ## Sources
 
--   _List all project sources here –models, textures, sound clips, assets, etc._
--   _If an asset is from the Unity store, include a link to the page and the author’s name_
+-   Player spaceship: https://craftpix.net/freebies/free-spaceship-pixel-art-sprite-sheets/
+-   Backgrounds: https://craftpix.net/product/space-vertical-game-backgrounds/?num=1&count=160&sq=space%20background&pos=2
+-   Enemy ships: https://craftpix.net/product/enemy-spaceship-game-sprites/?num=2&count=313&sq=enemy%20ship&pos=10
+-   Gui: https://craftpix.net/freebies/free-space-shooter-game-gui/?num=1&count=160&sq=space%20background&pos=3
 
 ## Known Issues
 

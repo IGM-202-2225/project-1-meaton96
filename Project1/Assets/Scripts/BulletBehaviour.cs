@@ -4,9 +4,9 @@ using UnityEditor;
 using UnityEngine;
 
 public class BulletBehaviour : MonoBehaviour {
-    private const float HIT_BOX_OFFSET_Y = -.05f, HIT_BOX_RADIUS = .05f;
+    private const float HIT_BOX_OFFSET_Y = .52f, HIT_BOX_RADIUS = .05f;
     [SerializeField] private float speed;
-    [SerializeField] private float angle;
+    public float angle; 
     //private bool firedByPlayer;
     float maxY;
     public int damage;
@@ -28,8 +28,9 @@ public class BulletBehaviour : MonoBehaviour {
         }
 
     }
-    public void Init(int damage) {
+    public void Init(int damage, float angle) {
         this.damage = damage;
+        this.angle = angle;
     }
 
 
@@ -44,7 +45,7 @@ public class BulletBehaviour : MonoBehaviour {
                 enemyScript.health -= damage;
                 if (enemyScript.health <= 0) {
                     enemyScript.isAlive = false;
-                }
+                }   
 
                 if (!enemyScript.isAlive)
                     enemyList.Remove(enemy);
