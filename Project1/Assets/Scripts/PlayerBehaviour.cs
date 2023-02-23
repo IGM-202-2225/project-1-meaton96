@@ -73,6 +73,9 @@ public class PlayerBehaviour : MonoBehaviour {
     }
     public void HitByBullet(int damage) {
         currentHealth -= damage;
+        if (currentHealth< 0) {
+            currentHealth = 0;
+        }
     }
     public bool CheckCollision(GameObject bullet) {
         if (!bullet.TryGetComponent<EnemyBulletBehaviour>(out _))
@@ -173,10 +176,10 @@ public class PlayerBehaviour : MonoBehaviour {
 
     }
     public string getPlayerStats() {
-        return "Health " + currentHealth + "\t\t" +
+        return "Health " + currentHealth + "/" + maxHealth + "\t" +
             "Armor " + armor + "\n" +
             "Bullets " + numBulletsFired + "\t\t" +
-            "A. Speed " + AttackSpeed + "\n" +
+            "Atl Speed " + AttackSpeed + "\n" +
             "Pierce " + numTargetsPierced + "\t\t" + 
             "Damage " + damageDone;
     }
