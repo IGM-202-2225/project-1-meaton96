@@ -10,8 +10,9 @@ public class UIBehaviour : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI coinText;
     [SerializeField] private TextMeshProUGUI infoText;
     [SerializeField] private TextMeshProUGUI livesText;
-    [SerializeField] private GameObject InfoBox;
-    private const float LIFE_SCALE = .7f;
+    [SerializeField] private TextMeshProUGUI enemiesRemainingText;
+    [SerializeField] private GameObject infoBox;
+    [SerializeField] private GameController gameController;
     private PlayerBehaviour playerScript;
     private bool infoDisplayed;
     // Start is called before the first frame update
@@ -31,17 +32,18 @@ public class UIBehaviour : MonoBehaviour {
         coinText.text = playerScript.coins + "";
         infoText.text = playerScript.getPlayerStats();
         livesText.text = "Lives\n" + playerScript.Lives;
+        enemiesRemainingText.text = "Remaining: " + gameController.enemies.Count;
 
     }
 
     public void ToggleInfo() {
         if (infoDisplayed) {
             infoDisplayed = false;
-            InfoBox.SetActive(false);
+            infoBox.SetActive(false);
         }
         else {
             infoDisplayed = true;
-            InfoBox.SetActive(true);
+            infoBox.SetActive(true);
         }
     }
 
