@@ -19,7 +19,7 @@ public class PlayerBehaviour : MonoBehaviour {
     public float firstRadiusYOffset = .5f;
     public float secondRadiusXOffset = .1f;
     public float thirdRadiusYOffset = -0.4f, thirdRadiusXOffset = 0.25f;
-    public int currentHealth;
+    public int currentHealth;   
     public int maxHealth = 10;
     public int score;
     private int lives;
@@ -28,11 +28,14 @@ public class PlayerBehaviour : MonoBehaviour {
     public int numBulletsFired;
     public float bulletSpreadAngle = 10f;
     public int damageDone = 1;
+    public int armor;
+    public int numTargetsPierced = 0;
     public float AttackSpeed { get { return 1 / attackDelay; } }
 
     // Start is called before the first frame update
     void Start() {
-        numBulletsFired = 4;
+        armor = 0;
+        numBulletsFired = 4; 
         shipType = 0;
         lives = 3;
         coins = 0;
@@ -168,6 +171,14 @@ public class PlayerBehaviour : MonoBehaviour {
             transform.position += verticalSpeed * Time.deltaTime * Vector3.up;
         }
 
+    }
+    public string getPlayerStats() {
+        return "Health " + currentHealth + "\t\t" +
+            "Armor " + armor + "\n" +
+            "Bullets " + numBulletsFired + "\t\t" +
+            "A. Speed " + AttackSpeed + "\n" +
+            "Pierce " + numTargetsPierced + "\t\t" + 
+            "Damage " + damageDone;
     }
     public bool IsAlive() { return currentHealth > 0; }
     public void DecrementLives() { lives--; }

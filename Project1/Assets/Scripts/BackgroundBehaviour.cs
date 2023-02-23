@@ -24,6 +24,9 @@ public class BackgroundBehaviour : MonoBehaviour {
     }
 
     // Update is called once per frame
+    // Moves the background image down slowly
+    // when it is down far enough, load another copy of the background and begin moving that as well
+    // swap the pointers when the first background is off the screen and delete the old backround
     void Update() {
         currentBackground.transform.position += bgMovementSpeed * Time.deltaTime * Vector3.down;
 
