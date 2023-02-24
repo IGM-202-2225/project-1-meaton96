@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour {
     private bool paused = true;                                     //bool if game is paused or not
     private const float ROW_SEP_Y = 2;
     private const float ENEMY_SCALE = .8f;
+    private const float ENEMY_BASE_SPEED = 4;
     // Start is called before the first frame update
     void Start() {
         //initialize shop variables
@@ -66,7 +67,7 @@ public class GameController : MonoBehaviour {
    /// <param name="scale">float to scale the enemy model to</param>
     private void SpawnEnemy(int enemyType, Vector3 pos, bool right, float scale) {
         GameObject enemy = Instantiate(enemyPreFab, pos, Quaternion.identity);
-        enemy.GetComponent<EnemyBehaviour>().Init(enemyType, 4, right, scale, 1);
+        enemy.GetComponent<EnemyBehaviour>().Init(enemyType, ENEMY_BASE_SPEED, right, scale);
         enemies.Add(enemy);
     }
 
@@ -126,6 +127,9 @@ public class GameController : MonoBehaviour {
         Time.timeScale = 1f;
         levelNumber++;
         SpawnDefaultEnemyWave(enemyType++, 1, 1);
+
+        
+
         //todo
     }
     public void SpawnEnemyWave() {

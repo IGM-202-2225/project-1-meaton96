@@ -29,6 +29,14 @@ public class EnemyBehaviour : MonoBehaviour {
     private const float BASE_COIN_DROP_CHANCE = .5f;
     private const float BULLET_LENGTH = .45f;
 
+    private Color[] BULLET_COLORS = {
+        Color.white,
+        Color.blue,
+        Color.green,
+        Color.yellow,
+        Color.red,
+    };
+
     // Update is called once per frame
     void Update() {
         
@@ -69,11 +77,16 @@ public class EnemyBehaviour : MonoBehaviour {
                 else
                     angle = bulletSpreadAngle * x / 2;
             }
-            Vector3 pos = new Vector3(transform.position.x,
+            Vector3 pos = new(transform.position.x,
                 transform.position.y - BULLET_LENGTH,
                 0f);
             GameObject bullet = Instantiate(bulletPrefab, pos, Quaternion.Euler(new Vector3(0f, 0f, angle)));
-            bullet.GetComponent<EnemyBulletBehaviour>().Init(damageDone, ToRadians(angle));
+
+            int bulletColor = damageDone - 1;
+            if (bulletColor >= BULLET_COLORS.Length)
+                bulletColor = BULLET_COLORS.Length;
+
+            bullet.GetComponent<EnemyBulletBehaviour>().Init(damageDone, ToRadians(angle), BULLET_COLORS[bulletColor]);
         }
     }
     private float ToRadians(float angle) {
@@ -96,8 +109,8 @@ public class EnemyBehaviour : MonoBehaviour {
     }
 
 
-    public void Init(int type, int speed, bool right, int damage) {
-        numBulletsFired = type + 1;
+    public void Init(int type, float speed, bool right) {
+        
         this.type = type;
         transform.localScale = new Vector3(scale, scale, scale);                    //shrink or grow enemy
         this.right = right;                                                         //set left or right direction
@@ -108,21 +121,36 @@ public class EnemyBehaviour : MonoBehaviour {
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         animator.SetTrigger("ship" + type);     //change the ship model by setting animation trigger
         this.speed = speed;
-        this.damageDone = damage;
         shootDelay = Random.Range(DEFAULT_SHOOT_DELAY/ 2.0f, DEFAULT_SHOOT_DELAY) / (type + 1); 
 
         switch(type) {
-            case 0: sr.color = Color.white;
+            case 0: 
+                sr.color = Color.white;
+                numBulletsFired = 1;
+                damageDone = 1;
                 break;
             case 1: sr.color = Color.green;
+                numBulletsFired = 3;
+                damageDone = 1;
                 break;
-            case 2: sr.color = Color.grey;
+            case 2: 
+                sr.color = Color.grey;
+                numBulletsFired = 1;
+                damageDone = 2;
                 break;
-            case 3: sr.color = Color.red;
+            case 3: 
+                sr.color = Color.red;
+                numBulletsFired = 4;
+                damageDone = 2;
                 break;
-            case 4: sr.color = Color.blue;
+            case 4:
+                sr.color = Color.blue;
+                numBulletsFired = 3;
+                damageDone = 4;
                 break;
             case 5: sr.color = Color.magenta;
+                numBulletsFired = 6;
+                damageDone = 4;
                 break;
         }
 
@@ -130,9 +158,12 @@ public class EnemyBehaviour : MonoBehaviour {
     public void SetBulletsFired(int num) {
         numBulletsFired = num;
     }
-    public void Init(int type, int speed, bool right, float scale, int damage) {
+    public void Init(int type, float speed, bool right, float scale) {
         this.scale = scale;
-        Init(type, speed, right, damage);
+        Init(type, speed, right);
+    }
+    public void SetDamage(int damage) {
+        damageDone = damage;
     }
 
     //check for collision with the something located at 'center' vector with hit box circle of radius 'radius'
