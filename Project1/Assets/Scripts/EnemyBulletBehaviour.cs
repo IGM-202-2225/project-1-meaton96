@@ -11,6 +11,7 @@ public class EnemyBulletBehaviour : MonoBehaviour
     private float maxY;                                                 //edge of the screen
     public int damage;                                                  //how much damage the bullet does
     PlayerBehaviour playerScript;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,9 +22,9 @@ public class EnemyBulletBehaviour : MonoBehaviour
     void Update()
     {
         CheckCollisions();                              //check for collisions with player
-        transform.position -= new Vector3(              //adjust position, move bullet
+        transform.position += new Vector3(              //adjust position, move bullet
             speed * Time.deltaTime * Mathf.Sin(angle),
-            speed * Time.deltaTime * Mathf.Cos(angle),
+            -speed * Time.deltaTime * Mathf.Cos(angle),
             0);
         
         if (transform.position.y > maxY || transform.position.y < -maxY) {
@@ -31,11 +32,12 @@ public class EnemyBulletBehaviour : MonoBehaviour
         }
 
     }
-    public void Init(int damage) {
+    public void Init(int damage, float angle) {
         this.damage = damage;                   //set damage
         playerScript = GameObject.FindGameObjectWithTag("GameController").
             GetComponent<GameController>().
             player.GetComponent<PlayerBehaviour>(); //get player script instance
+        this.angle = angle;
     }
 
     //checks if the bullet hit the player by calling player CheckCollision

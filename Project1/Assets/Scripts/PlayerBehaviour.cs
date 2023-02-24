@@ -47,7 +47,7 @@ public class PlayerBehaviour : MonoBehaviour {
         numBulletsFired = 1; 
         shipType = 0;
         lives = 3;
-        coins = 0;
+        coins = 10;
         sr = GetComponent<SpriteRenderer>();
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) - 4;
@@ -220,4 +220,7 @@ public class PlayerBehaviour : MonoBehaviour {
     }
     public int Lives { get { return lives; } }
 
+    public bool CanPurchaseItem(int itemCost, int shoppingCartTotal) {
+        return coins >= itemCost + shoppingCartTotal;
+    }
 }

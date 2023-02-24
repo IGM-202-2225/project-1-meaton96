@@ -6,6 +6,7 @@ using UnityEngine;
 public class BulletBehaviour : MonoBehaviour {
     private const float HIT_BOX_OFFSET_Y = .52f, HIT_BOX_RADIUS = .05f;
     [SerializeField] private float speed;
+    private List<GameObject> enemyList;
     public float angle; 
     //private bool firedByPlayer;
     float maxY;
@@ -13,6 +14,7 @@ public class BulletBehaviour : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) + 5;
+        enemyList = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().enemies;
     }
 
     // Update is called once per frame
@@ -35,7 +37,7 @@ public class BulletBehaviour : MonoBehaviour {
 
 
     void CheckCollisions() {
-        List<GameObject> enemyList = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().enemies;
+        
 
         foreach (GameObject enemy in enemyList) {
             EnemyBehaviour enemyScript = enemy.GetComponent<EnemyBehaviour>();

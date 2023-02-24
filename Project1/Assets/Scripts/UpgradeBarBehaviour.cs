@@ -8,7 +8,7 @@ public class UpgradeBarBehaviour : MonoBehaviour {
 
     [SerializeField] GameObject tickPreFab;                     //prefab for displaying number of upgrades
     private GameObject[] ticks;                                 //holds the prefab instances
-    public int upgradeId;                                      //id for which upgrade bar this is
+    public int upgradeId;                                       //id for which upgrade bar this is
     private int numTicksPurchased, numTicksCart;                //holds number of upgrades already purchased and amount selected for purchase
     private Vector3 startingPoint;                              //starting point to draw upgrade ticks
     private const int MAX_UPGRADE_AMOUNT = 8;                   //maximum amount of each ugprade type
@@ -18,8 +18,7 @@ public class UpgradeBarBehaviour : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI typeText;          //header for upgrade type
     [SerializeField] private TextMeshProUGUI costText;          //cost of upgrade
     private int costPerTick;                                    //cost per tick 
-    //private int totalUpgradeCost;
-    [SerializeField] private ShopBehaviour shopScript;
+    [SerializeField] private ShopBehaviour shopScript;          //pointer to shop parent script
     // Start is called before the first frame update
     void Start() {
         //create 8 upgrade ticks and hide them
@@ -42,7 +41,6 @@ public class UpgradeBarBehaviour : MonoBehaviour {
         shopScript = sb;
     }
 
-
     //set cost of each upgrade tick, call when creating the shop item
     public void SetCostPerTick(int cost) {
         costPerTick = cost;
@@ -51,12 +49,6 @@ public class UpgradeBarBehaviour : MonoBehaviour {
     public int GetCostOfNextTick() {
         return costPerTick * (GetUpgradeLevel() + 1);
     }
-
-    /*get the total amount of upgrade for shopping cart cost
-    public int GetTotalUpgradeCost() {
-        return totalUpgradeCost;
-    }*/
-
     //set the info and type header text based on the ID
     private void SetInfoText() {
         string info = "", type = "";
@@ -123,28 +115,31 @@ public class UpgradeBarBehaviour : MonoBehaviour {
     //increase the number of upgrades if possible
     public void IncreaseTicks() {
         if (numTicksPurchased + numTicksCart < MAX_UPGRADE_AMOUNT &&
-            shopScript.playerScript.coins >= GetCostOfNextTick()) {
-            //totalUpgradeCost += GetCostOfNextTick();
+            shopScript.playerScript.CanPurchaseItem(GetCostOfNextTick(), shopScript.shoppingCartAmount) &&
+            Enabled()) {
             shopScript.AddToShoppingCart(GetCostOfNextTick());
             numTicksCart++;
-            
+
         }
 
     }
     //decrease the number of upgrades if possible
     public void DecreaseTicks() {
-        if (numTicksCart > 0) {
+        if (numTicksCart > 0 && Enabled()) {
             numTicksCart--;
-           // totalUpgradeCost -= GetCostOfNextTick();
             shopScript.SubtractFromShoppingCart(GetCostOfNextTick());
         }
 
     }
+    //checks if shop items are enabled (between rounds)
+    public bool Enabled() {
+        return shopScript.canPurchase;
+    }
+    //resets color for purchased upgrades
     public void ResetTicks() {
         for (int x = 0; x < numTicksPurchased; x++) {
             ticks[x].GetComponent<Image>().color = Color.white;
         }
-        //totalUpgradeCost = 0;
         numTicksCart = 0;
     }
 

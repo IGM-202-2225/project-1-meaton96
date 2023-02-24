@@ -18,19 +18,16 @@ public class EnemyBehaviour : MonoBehaviour {
     private bool right;                 //keeps track if the enemy is moving left or right
     private float speed;                //how fast the enemy is moving
     private SpriteRenderer sr;          //pointer to sprite render component
-    public int damage;                  //how much damage the enemy does with its shot
+    public int damageDone;                  //how much damage the enemy does with its shot
     public int health;                  //how much health the enemy has
     private float shootTimer = 0f, shootDelay;          //floats to track and delay the time between enemy shots
     [SerializeField] private GameObject bulletPrefab;   //prefab for the enemy bullet
     int type;
+    public int numBulletsFired;
+    public float bulletSpreadAngle = 10f;
     private const int BASE_SCORE = 100;
     private const float BASE_COIN_DROP_CHANCE = .5f;
-
-    // Start is called before the first frame update
-    void Start() {
-
-
-    }
+    private const float BULLET_LENGTH = .45f;
 
     // Update is called once per frame
     void Update() {
@@ -51,10 +48,36 @@ public class EnemyBehaviour : MonoBehaviour {
     }
     //spawns a bullet at enemy position
     void Shoot() {
-        Vector3 pos = new(transform.position.x, transform.position.y - 1, 0);
-        GameObject bullet = Instantiate(bulletPrefab, pos, Quaternion.identity);
-        bullet.GetComponent<EnemyBulletBehaviour>().Init(damage);
-
+        //Vector3 pos = new(transform.position.x, transform.position.y - 1, 0);
+        //GameObject bullet = Instantiate(bulletPrefab, pos, Quaternion.identity);
+        //bullet.GetComponent<EnemyBulletBehaviour>().Init(damage);
+        float angle;
+        for (int x = 0; x < numBulletsFired; x++) {
+            if (numBulletsFired % 2 != 0) {
+                if (x == 0)
+                    angle = 0;
+                else if (x % 2 != 0) {
+                    angle = bulletSpreadAngle * (x + 1) / 2;
+                }
+                else
+                    angle = -bulletSpreadAngle * x / 2;
+            }
+            else {
+                if (x % 2 == 0) {
+                    angle = -bulletSpreadAngle * (x + 1) / 2;
+                }
+                else
+                    angle = bulletSpreadAngle * x / 2;
+            }
+            Vector3 pos = new Vector3(transform.position.x,
+                transform.position.y - BULLET_LENGTH,
+                0f);
+            GameObject bullet = Instantiate(bulletPrefab, pos, Quaternion.Euler(new Vector3(0f, 0f, angle)));
+            bullet.GetComponent<EnemyBulletBehaviour>().Init(damageDone, ToRadians(angle));
+        }
+    }
+    private float ToRadians(float angle) {
+        return angle / 180 * Mathf.PI;
     }
 
     //default left or right movement for simple enemy waves
@@ -74,6 +97,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
 
     public void Init(int type, int speed, bool right, int damage) {
+        numBulletsFired = type + 1;
         this.type = type;
         transform.localScale = new Vector3(scale, scale, scale);                    //shrink or grow enemy
         this.right = right;                                                         //set left or right direction
@@ -84,8 +108,8 @@ public class EnemyBehaviour : MonoBehaviour {
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         animator.SetTrigger("ship" + type);     //change the ship model by setting animation trigger
         this.speed = speed;
-        this.damage = damage;
-        shootDelay = Random.Range(DEFAULT_SHOOT_DELAY / 2.0f, DEFAULT_SHOOT_DELAY);
+        this.damageDone = damage;
+        shootDelay = Random.Range(DEFAULT_SHOOT_DELAY/ 2.0f, DEFAULT_SHOOT_DELAY) / (type + 1); 
 
         switch(type) {
             case 0: sr.color = Color.white;
@@ -98,10 +122,13 @@ public class EnemyBehaviour : MonoBehaviour {
                 break;
             case 4: sr.color = Color.blue;
                 break;
-            case 5: sr.color = Color.black;
+            case 5: sr.color = Color.magenta;
                 break;
         }
 
+    }
+    public void SetBulletsFired(int num) {
+        numBulletsFired = num;
     }
     public void Init(int type, int speed, bool right, float scale, int damage) {
         this.scale = scale;
