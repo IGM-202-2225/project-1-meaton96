@@ -8,7 +8,7 @@ public class UpgradeBarBehaviour : MonoBehaviour {
 
     [SerializeField] GameObject tickPreFab;                     //prefab for displaying number of upgrades
     private GameObject[] ticks;                                 //holds the prefab instances
-    private int upgradeId;                                      //id for which upgrade bar this is
+    public int upgradeId;                                      //id for which upgrade bar this is
     private int numTicksPurchased, numTicksCart;                //holds number of upgrades already purchased and amount selected for purchase
     private Vector3 startingPoint;                              //starting point to draw upgrade ticks
     private const int MAX_UPGRADE_AMOUNT = 8;                   //maximum amount of each ugprade type
@@ -18,12 +18,12 @@ public class UpgradeBarBehaviour : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI typeText;          //header for upgrade type
     [SerializeField] private TextMeshProUGUI costText;          //cost of upgrade
     private int costPerTick;                                    //cost per tick 
-    private int totalUpgradeCost;
+    //private int totalUpgradeCost;
+    [SerializeField] private ShopBehaviour shopScript;
     // Start is called before the first frame update
     void Start() {
         //create 8 upgrade ticks and hide them
         //set their parent to this transform
-
         ticks = new GameObject[8];
         startingPoint = new Vector3(-98, 3, 0);
         for (int x = 0; x < ticks.Length; x++) {
@@ -38,22 +38,24 @@ public class UpgradeBarBehaviour : MonoBehaviour {
         numTicksPurchased = 0;
         SetInfoText();
     }
+    public void SetShopScript(ShopBehaviour sb) {
+        shopScript = sb;
+    }
+
+
     //set cost of each upgrade tick, call when creating the shop item
     public void SetCostPerTick(int cost) {
         costPerTick = cost;
     }
     //get cost of next upgrade
     public int GetCostOfNextTick() {
-        return costPerTick * (TotalTicks() + 1);
+        return costPerTick * (GetUpgradeLevel() + 1);
     }
-    //get total number of ticks 
-    public int TotalTicks() {
-        return numTicksPurchased + numTicksCart;
-    }
-    //get the total amount of upgrade for shopping cart cost
+
+    /*get the total amount of upgrade for shopping cart cost
     public int GetTotalUpgradeCost() {
         return totalUpgradeCost;
-    }
+    }*/
 
     //set the info and type header text based on the ID
     private void SetInfoText() {
@@ -94,12 +96,14 @@ public class UpgradeBarBehaviour : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+
         //changes the visability and color of each tick
         //sets visable for shopping cart or already purchased upgrades
         //hides all others
         for (int x = 0; x < ticks.Length; x++) {
-            if (x < numTicksPurchased)
+            if (x < numTicksPurchased) {
                 ticks[x].SetActive(true);
+            }
             else if (x < numTicksCart + numTicksPurchased) {
                 ticks[x].SetActive(true);
                 //set the color to green for not yet purchased upgrades
@@ -110,6 +114,7 @@ public class UpgradeBarBehaviour : MonoBehaviour {
         }
         //update cost text
         costText.text = GetCostOfNextTick() + "";
+
     }
     //set the upgrade ID, to be called when creating the shop item
     public void SetUpgradeId(int id) {
@@ -117,9 +122,12 @@ public class UpgradeBarBehaviour : MonoBehaviour {
     }
     //increase the number of upgrades if possible
     public void IncreaseTicks() {
-        if (numTicksPurchased + numTicksCart < MAX_UPGRADE_AMOUNT) {
-            totalUpgradeCost += GetCostOfNextTick();
+        if (numTicksPurchased + numTicksCart < MAX_UPGRADE_AMOUNT &&
+            shopScript.playerScript.coins >= GetCostOfNextTick()) {
+            //totalUpgradeCost += GetCostOfNextTick();
+            shopScript.AddToShoppingCart(GetCostOfNextTick());
             numTicksCart++;
+            
         }
 
     }
@@ -127,12 +135,22 @@ public class UpgradeBarBehaviour : MonoBehaviour {
     public void DecreaseTicks() {
         if (numTicksCart > 0) {
             numTicksCart--;
-            totalUpgradeCost -= GetCostOfNextTick();
+           // totalUpgradeCost -= GetCostOfNextTick();
+            shopScript.SubtractFromShoppingCart(GetCostOfNextTick());
         }
 
     }
+    public void ResetTicks() {
+        for (int x = 0; x < numTicksPurchased; x++) {
+            ticks[x].GetComponent<Image>().color = Color.white;
+        }
+        //totalUpgradeCost = 0;
+        numTicksCart = 0;
+    }
+
+
     //get the total number of upgrade ticks
-    public int GetTicks() {
+    public int GetUpgradeLevel() {
         return numTicksPurchased + numTicksCart;
     }
     //show or hide the info box on hover of info button
@@ -142,13 +160,8 @@ public class UpgradeBarBehaviour : MonoBehaviour {
     public void HideInfoBox() {
         infoTextBox.SetActive(false);
     }
-    //sets the purchased amount
-    //might be needed 
     public void SetPurchasedAmount(int amount) {
-        if (amount < MAX_UPGRADE_AMOUNT) {
-            numTicksPurchased = amount;
-            numTicksCart = 0;
-        }
-
+        numTicksPurchased = amount;
     }
+
 }

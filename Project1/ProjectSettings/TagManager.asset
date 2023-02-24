@@ -6,6 +6,7 @@ TagManager:
   tags:
   - bgCanvas
   - enemy
+  - Shop
   layers:
   - Default
   - TransparentFX

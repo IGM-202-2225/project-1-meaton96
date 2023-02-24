@@ -5,22 +5,21 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerBehaviour : MonoBehaviour {
-    [SerializeField] private GameObject bgControl;
-    [SerializeField] private float lateralSpeed, verticalSpeed;
+    private float movementSpeed;
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Sprite[] shipSprites = new Sprite[3];
     public int shipType;
     private SpriteRenderer sr;
     private float maxX, maxY;
     [SerializeField] private float bulletSpawnOffset;
-    [SerializeField] private float attackDelay = .5f;
+    [SerializeField] private float attackDelay;
     private float shootCount = 0;
     public float firstRadius = 1f, secondRadius = 0.4f;
     public float firstRadiusYOffset = .5f;
     public float secondRadiusXOffset = .1f;
     public float thirdRadiusYOffset = -0.4f, thirdRadiusXOffset = 0.25f;
     public int currentHealth;   
-    public int maxHealth = 10;
+    public int maxHealth;
     public int score;
     private int lives;
     public int coins;
@@ -30,12 +29,22 @@ public class PlayerBehaviour : MonoBehaviour {
     public int damageDone = 1;
     public int armor;
     public int numTargetsPierced = 0;
+    private const int HEALTH_PER_UPGRADE = 10;
+    private const int BASE_HEALTH = 10;
+    private const float BASE_SPEED = 8;
+    private const float SPEED_PER_UPGRADE = .5f;
+    private const float ATTACK_SPEED_PER_UPGRADE = -0.5f;
+    private const float BASE_ATTACK_DELAY = .5f;
+    public int[] upgradeLevels;
     public float AttackSpeed { get { return 1 / attackDelay; } }
 
     // Start is called before the first frame update
     void Start() {
+        upgradeLevels = new int[6];
+        attackDelay = BASE_ATTACK_DELAY;
         armor = 0;
-        numBulletsFired = 4; 
+        movementSpeed = BASE_SPEED;
+        numBulletsFired = 1; 
         shipType = 0;
         lives = 3;
         coins = 0;
@@ -43,7 +52,7 @@ public class PlayerBehaviour : MonoBehaviour {
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) - 4;
 
-        currentHealth = maxHealth;
+        currentHealth = maxHealth = BASE_HEALTH;
 
         switch (shipType) {
             case 0:
@@ -162,16 +171,16 @@ public class PlayerBehaviour : MonoBehaviour {
     void HandlePlayerMovement() {
 
         if (Input.GetKey(KeyCode.A) && sr.bounds.min.x >= -maxX) {
-            transform.position += lateralSpeed * Time.deltaTime * Vector3.left;
+            transform.position += movementSpeed * Time.deltaTime * Vector3.left;
         }
         if (Input.GetKey(KeyCode.S) && sr.bounds.min.y >= -maxY) {
-            transform.position += verticalSpeed * Time.deltaTime * Vector3.down;
+            transform.position += movementSpeed * Time.deltaTime * Vector3.down;
         }
         if (Input.GetKey(KeyCode.D) && sr.bounds.max.x <= maxX) {
-            transform.position += lateralSpeed * Time.deltaTime * Vector3.right;
+            transform.position += movementSpeed * Time.deltaTime * Vector3.right;
         }
         if (Input.GetKey(KeyCode.W) && sr.bounds.max.y <= maxY) {
-            transform.position += verticalSpeed * Time.deltaTime * Vector3.up;
+            transform.position += movementSpeed * Time.deltaTime * Vector3.up;
         }
 
     }
@@ -183,6 +192,24 @@ public class PlayerBehaviour : MonoBehaviour {
             "Pierce " + numTargetsPierced + "\t\t" + 
             "Damage " + damageDone;
     }
+    public void SetUpgradeLevel(int upgradeId, int level) {
+        switch(upgradeId) {
+            case 0: currentHealth = maxHealth = level * HEALTH_PER_UPGRADE + BASE_HEALTH;
+                break;
+            case 1: armor = level;
+                break;
+            case 2: movementSpeed = BASE_SPEED + level * SPEED_PER_UPGRADE;
+                break;
+            case 3: damageDone = level + 1;
+                break;
+            case 4: attackDelay = BASE_ATTACK_DELAY + level * ATTACK_SPEED_PER_UPGRADE;
+                break;
+            case 5: numBulletsFired = level + 1;
+                break;
+        }
+        upgradeLevels[upgradeId] = level;
+    }
+
     public bool IsAlive() { return currentHealth > 0; }
     public void DecrementLives() { lives--; }
     public void IncrementLives() { lives++; }

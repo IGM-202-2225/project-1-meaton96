@@ -220,9 +220,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9553be18a51a1af4f8475e1ee40f1e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bgControl: {fileID: 514245244}
-  lateralSpeed: 8
-  verticalSpeed: 4
   bulletPrefab: {fileID: 2218975693531696653, guid: 9ba7221459709ba4baef440041d6042f, type: 3}
   shipSprites:
   - {fileID: 21300000, guid: 6941f2b243d864b458d4a530802c360a, type: 3}
@@ -247,6 +244,7 @@ MonoBehaviour:
   damageDone: 1
   armor: 0
   numTargetsPierced: 0
+  upgradeLevels: 
 --- !u!1 &184316178
 GameObject:
   m_ObjectHideFlags: 0
@@ -2146,7 +2144,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1788709106}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2259,82 +2257,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1414830240
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1414830241}
-  - component: {fileID: 1414830243}
-  - component: {fileID: 1414830242}
-  m_Layer: 5
-  m_Name: ShopWindow
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &1414830241
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1414830240}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1788709106}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -0.0000019078}
-  m_SizeDelta: {x: 315.9344, y: 390}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1414830242
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1414830240}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6b825fd77e946e942b38e2f93ed152da, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1414830243
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1414830240}
-  m_CullTransparentMesh: 1
 --- !u!1 &1606367690
 GameObject:
   m_ObjectHideFlags: 0
@@ -2417,7 +2339,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1606367693}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1788709102}
+        m_TargetAssemblyTypeName: ShopBehaviour, Assembly-CSharp
+        m_MethodName: PurchaseAndExit
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1606367693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2833,7 +2767,7 @@ MonoBehaviour:
   gameController: {fileID: 826599070}
   cristalText: {fileID: 1033604388}
   playerScript: {fileID: 50402443}
-  shopItemPrefab: {fileID: 3852184284670802260, guid: a056b51c60725d848942c74c05806d51, type: 3}
+  shopItemPrefab: {fileID: 4583877534180727446, guid: a056b51c60725d848942c74c05806d51, type: 3}
   canPurchase: 0
 --- !u!114 &1788709103
 MonoBehaviour:
@@ -2913,7 +2847,6 @@ RectTransform:
   - {fileID: 1606367691}
   - {fileID: 238929449}
   - {fileID: 1033604390}
-  - {fileID: 1414830241}
   - {fileID: 1290915163}
   m_Father: {fileID: 0}
   m_RootOrder: 6

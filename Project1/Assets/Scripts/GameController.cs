@@ -18,6 +18,8 @@ public class GameController : MonoBehaviour {
     private bool paused = true;
     // Start is called before the first frame update
     void Start() {
+        
+        shopCanvas.GetComponent<ShopBehaviour>().Init();
         levelNumber = 0;
         playerScript = player.GetComponent<PlayerBehaviour>();
         playerSpawn = new Vector2(0f, -3f);
@@ -96,6 +98,7 @@ public class GameController : MonoBehaviour {
         shopCanvas.GetComponent<ShopBehaviour>().canPurchase = betweenLevels;
         Time.timeScale = 0f;
         shopCanvas.SetActive(true);
+        shopCanvas.GetComponent<ShopBehaviour>().OnShopShow();
     }
     public void StartNewLevel() {
         paused = false;
