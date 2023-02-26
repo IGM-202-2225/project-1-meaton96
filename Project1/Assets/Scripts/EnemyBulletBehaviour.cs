@@ -8,7 +8,7 @@ public class EnemyBulletBehaviour : MonoBehaviour {
     [SerializeField] private float speed;                               //how fast the bullet moves
     [SerializeField] private float angle;                               //angle off straight down
     private float maxY;                                                 //edge of the screen
-    public int damage;                                                  //how much damage the bullet does
+    public float damage;                                                  //how much damage the bullet does
     PlayerBehaviour playerScript;
 
     // Start is called before the first frame update
@@ -29,7 +29,7 @@ public class EnemyBulletBehaviour : MonoBehaviour {
         }
 
     }
-    public void Init(int damage, float angle, Color color) {
+    public void Init(float damage, float angle, Color color) {
         this.damage = damage;                   //set damage
         playerScript = GameObject.FindGameObjectWithTag("GameController").
             GetComponent<GameController>().

@@ -16,7 +16,7 @@ public class GameController : MonoBehaviour {
     public GameObject player;                                       //pointer to player
     private PlayerBehaviour playerScript;                           //pointer to player script
                                                                     // private int enemyType = 0;                                      
-    private int levelNumber;                                        //stores which number level player is on
+    public int levelNumber;                                        //stores which number level player is on
     private bool paused = false;                                     //bool if game is paused or not
     private const float ROW_SEP_Y = 2;
     private const float ENEMY_SCALE = .8f;
@@ -128,19 +128,17 @@ public class GameController : MonoBehaviour {
         //paused = false;
         //shopCanvas.SetActive(false);
         //Time.timeScale = 1f;
+        playerScript.coins += levelNumber;
         levelNumber++;
         //SpawnDefaultEnemyWave(1, 1, 1);
-        SpawnEnemyWave(5);
+        SpawnEnemyWave(5 + levelNumber * 5);
         for (int x = 0; x < ENEMY_SPAWN_WEIGHTS.Count; x++) {
             ENEMY_SPAWN_WEIGHTS[x] = ENEMY_SPAWN_WEIGHTS[x] + SPAWN_CHANGE_PER_LEVEL[x];
         }
-
-
     }
     public void SpawnEnemyWave(int numEnemies) {
-        float spawn = Random.Range(0, 1f);
-        float spawnX = NUM_ENEMIES_PER_ROW * defaultEnemyXOffset / -2;
 
+        float spawnX = NUM_ENEMIES_PER_ROW * defaultEnemyXOffset / -2;
 
         int row = 0;
         int count = 0;
@@ -149,14 +147,18 @@ public class GameController : MonoBehaviour {
 
 
             for (int y = 0; y < NUM_ENEMIES_PER_ROW && count < numEnemies; y++) {
+                float spawn = Random.Range(0, 1f);
+                //Debug.Log(spawn);
                 int index = 0;
-                float spawnSum = 0;
-                while (spawn < spawnSum) {
+                float spawnSum = ENEMY_SPAWN_WEIGHTS[0];
+
+                while (spawn > spawnSum) {
                     if (ENEMY_SPAWN_WEIGHTS[index] >= 1) {
                         SPAWN_CHANGE_PER_LEVEL[index] = -.1f;
                     }
                     spawnSum += ENEMY_SPAWN_WEIGHTS[index];
                     index++;
+                    
                 }
 
                 SpawnEnemy(index, new Vector3(

@@ -12,6 +12,7 @@ public class UIBehaviour : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI livesText;
     [SerializeField] private TextMeshProUGUI enemiesRemainingText;
     [SerializeField] private GameObject infoBox;
+    [SerializeField] private TextMeshProUGUI levelNumText;
     [SerializeField] private GameController gameController;
     private PlayerBehaviour playerScript;
     private bool infoDisplayed;
@@ -30,9 +31,13 @@ public class UIBehaviour : MonoBehaviour {
         }
         scoreText.text = "Score: " + playerScript.score;
         coinText.text = playerScript.coins + "";
-        infoText.text = playerScript.getPlayerStats();
+        if (infoDisplayed) 
+            infoText.text = playerScript.GetPlayerStat();
+        
+        levelNumText.text = "Level\n" + gameController.levelNumber;
         livesText.text = "Lives\n" + playerScript.Lives;
         enemiesRemainingText.text = "Remaining: " + gameController.enemies.Count;
+        
 
     }
 

@@ -18,7 +18,7 @@ public class EnemyBehaviour : MonoBehaviour {
     private bool right;                 //keeps track if the enemy is moving left or right
     private float speed;                //how fast the enemy is moving
     private SpriteRenderer sr;          //pointer to sprite render component
-    public int damageDone;                  //how much damage the enemy does with its shot
+    public float damageDone;                  //how much damage the enemy does with its shot
     public int health;                  //how much health the enemy has
     private float shootTimer = 0f, shootDelay;          //floats to track and delay the time between enemy shots
     [SerializeField] private GameObject bulletPrefab;   //prefab for the enemy bullet
@@ -28,6 +28,13 @@ public class EnemyBehaviour : MonoBehaviour {
     private const int BASE_SCORE = 100;
     private const float BASE_COIN_DROP_CHANCE = .5f;
     private const float BULLET_LENGTH = .45f;
+    private readonly float[] DAMAGE_DONE_EACH_ENEMY = {
+        10f,
+        10f,
+        20f,
+        25f,
+        35f
+    };
 
     private Color[] BULLET_COLORS = {
         Color.white,
@@ -82,7 +89,7 @@ public class EnemyBehaviour : MonoBehaviour {
                 0f);
             GameObject bullet = Instantiate(bulletPrefab, pos, Quaternion.Euler(new Vector3(0f, 0f, angle)));
 
-            int bulletColor = damageDone - 1;
+            int bulletColor = type;
             if (bulletColor >= BULLET_COLORS.Length)
                 bulletColor = BULLET_COLORS.Length;
 
@@ -127,32 +134,33 @@ public class EnemyBehaviour : MonoBehaviour {
             case 0: 
                 sr.color = Color.white;
                 numBulletsFired = 1;
-                damageDone = 1;
+                damageDone = 10;
                 break;
             case 1: sr.color = Color.green;
                 numBulletsFired = 3;
-                damageDone = 1;
+                damageDone = 10;
                 break;
             case 2: 
                 sr.color = Color.grey;
                 numBulletsFired = 1;
-                damageDone = 2;
+                damageDone = 20;
                 break;
             case 3: 
                 sr.color = Color.red;
                 numBulletsFired = 4;
-                damageDone = 2;
+                damageDone = 20;
                 break;
             case 4:
                 sr.color = Color.blue;
                 numBulletsFired = 3;
-                damageDone = 4;
+                damageDone = 30;
                 break;
             case 5: sr.color = Color.magenta;
                 numBulletsFired = 6;
-                damageDone = 4;
+                damageDone = 35;
                 break;
         }
+        damageDone = DAMAGE_DONE_EACH_ENEMY[type];
 
     }
     public void SetBulletsFired(int num) {

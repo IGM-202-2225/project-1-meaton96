@@ -5,49 +5,51 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerBehaviour : MonoBehaviour {
-    private float movementSpeed;
-    [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private Sprite[] shipSprites = new Sprite[3];
-    public int shipType;
-    private SpriteRenderer sr;
-    private float maxX, maxY;
-    [SerializeField] private float bulletSpawnOffset;
-    [SerializeField] private float attackDelay;
-    private float shootCount = 0;
-    public float firstRadius = 1f, secondRadius = 0.4f;
-    public float firstRadiusYOffset = .5f;
+    private float movementSpeed;                                                        //how fast the player can fly around
+    [SerializeField] private GameObject bulletPrefab;                                   //pointer to bullet pre fab 
+    [SerializeField] private Sprite[] shipSprites = new Sprite[3];                      //holds sprites for each ship type NYI
+    public int shipType;                                                                //NYI
+    private SpriteRenderer sr;                                                          //pointer to sprite renderer component
+    private float maxX, maxY;                                                           //floats to hold screen dimensions to keep player on screen
+    [SerializeField] private float bulletSpawnOffset;                                   //how far above the player to spawn the bullet
+    [SerializeField] private float attackDelay;                                         //in seconds how long between player can fire bullets
+    private float shootCount = 0;                                                       //counter for time passage for shooting
+    public float firstRadius = 1f, secondRadius = 0.4f;                                 //first and second sizes for hitbox circles
+    public float firstRadiusYOffset = .5f;                                              //offsets for drawing hitboxes
     public float secondRadiusXOffset = .1f;
     public float thirdRadiusYOffset = -0.4f, thirdRadiusXOffset = 0.25f;
-    public int currentHealth;   
-    public int maxHealth;
-    public int score;
-    private int lives;
-    public int coins;
-    public bool isSpawning = false;
-    public int numBulletsFired;
-    public float bulletSpreadAngle = 10f;
-    public int damageDone = 1;
-    public int armor;
-    public int numTargetsPierced = 0;
-    private const int HEALTH_PER_UPGRADE = 10;
-    private const int BASE_HEALTH = 10;
-    private const float BASE_SPEED = 8;
-    private const float SPEED_PER_UPGRADE = .5f;
-    private const float ATTACK_SPEED_PER_UPGRADE = -0.5f;
-    private const float BASE_ATTACK_DELAY = .5f;
-    public int[] upgradeLevels;
-    public float AttackSpeed { get { return 1 / attackDelay; } }
+    public float currentHealth;                                                           //current health points
+    public float maxHealth;                                                               //maximum health points
+    public int score;                                                                   //player score
+    private int lives;                                                                  //player lives
+    public int coins;                                                                   //player money
+    public bool isSpawning = false;                                                     //if the player is spawning (player is immune)
+    public int numBulletsFired;                                                         //number of bullets fired per shot
+    public float bulletSpreadAngle = 10f;                                               //angle between bullets when firing more than 1
+    public int damageDone = 1;                                                          //the damage of each bullet
+    public int armor;                                                                   //player armor
+    public int numTargetsPierced = 0;                                                   //number of enemies bullets pierce through
+    private const int HEALTH_PER_UPGRADE = 25;                                          //how much health the player gets per upgrade level
+    private const int BASE_HEALTH = 100;                                                //how much health player starts with
+    private const float BASE_SPEED = 8;                                                 //how fast player moves before any upgrades
+    private const float SPEED_PER_UPGRADE = .5f;                                        //how much faster player gets per upgrade level
+    private const float ATTACK_SPEED_PER_UPGRADE = -0.05f;                               //how much less time needs to pass before player can shoot again
+    private const float BASE_ATTACK_DELAY = .5f;                                        //base time in seconds between player attacks
+    private const float ARMOR_STRENGTH = 1.5f;                                           //how much damage each point of armor reduces
+    public int[] upgradeLevels;                                                         //stores how many of each upgrade type player has purchased
+    public float AttackSpeed { get { return ((int) (10 / attackDelay)) / 10f; } }                        //float for displaying player attack speed on interface
 
     // Start is called before the first frame update
     void Start() {
-        upgradeLevels = new int[6];
+        //set all variables to their base level
+        upgradeLevels = new int[6];            
         attackDelay = BASE_ATTACK_DELAY;
         armor = 0;
         movementSpeed = BASE_SPEED;
         numBulletsFired = 1; 
-        shipType = 0;
+        shipType = 0;   //only working ship type, others will have bad hitboxes
         lives = 3;
-        coins = 10;
+        coins = 100;
         sr = GetComponent<SpriteRenderer>();
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) - 4;
@@ -67,11 +69,13 @@ public class PlayerBehaviour : MonoBehaviour {
         }
     }
 
+    //increases player score by n
     public void AddToScore(int n) {
         score += n;
     }
     // Update is called once per frame
     void Update() {
+        //call player movement method and checks for player shooting
         HandlePlayerMovement();
         if (Input.GetKey(KeyCode.Space) && shootCount > attackDelay) {
             Shoot();
@@ -80,15 +84,18 @@ public class PlayerBehaviour : MonoBehaviour {
         else
             shootCount += Time.deltaTime;
     }
-    public void HitByBullet(int damage) {
-        currentHealth -= damage;
+    //take damage by passed in value (reduced by armor)
+    public void HitByBullet(float damage) {
+        currentHealth -= damage - armor * ARMOR_STRENGTH;
         if (currentHealth< 0) {
             currentHealth = 0;
         }
     }
+    //check for collisions with enemy bullet, check outer radius circle before calling inner circle collision
     public bool CheckCollision(GameObject bullet) {
         if (!bullet.TryGetComponent<EnemyBulletBehaviour>(out _))
             return false;
+        //magnitute^2 < x^2 + y^2
         Vector3 bulletPos = bullet.transform.position;
         if (Mathf.Pow(transform.position.x - bulletPos.x, 2) +
             Mathf.Pow(transform.position.y - bulletPos.y + EnemyBulletBehaviour.HIT_BOX_OFFSET_Y, 2) <=
@@ -97,6 +104,8 @@ public class PlayerBehaviour : MonoBehaviour {
         }
         return false;
     }
+    //checks each of the 5 inner hitbox circles against bullet hitbox to check for actual
+    //ship collisions
     private bool CheckSecondCollision(GameObject bullet) {
         Vector3 bulletPos = new(bullet.transform.position.x,
             bullet.transform.position.y + EnemyBulletBehaviour.HIT_BOX_OFFSET_Y,
@@ -124,6 +133,7 @@ public class PlayerBehaviour : MonoBehaviour {
     void Shoot() {
         float angle;
         
+        //changes how bullets are spawned based on how many are being fired
         for (int x = 0; x < numBulletsFired; x++) {
             if (numBulletsFired % 2 != 0) {
                 if (x == 0)
@@ -142,13 +152,10 @@ public class PlayerBehaviour : MonoBehaviour {
                     angle = bulletSpreadAngle * x / 2;
             }
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.Euler(new Vector3(0f, 0f, -angle)));
-            bullet.GetComponent<BulletBehaviour>().Init(damageDone, ToRadians(angle));
+            bullet.GetComponent<BulletBehaviour>().Init(damageDone, ToRadians(angle), numTargetsPierced);
         }
-
-
-
-
     }
+    //helper function since Quaternion Euler method takes degrees and movement (Mathf trig functions) takes radians??
     private float ToRadians(float angle) {
         return angle / 180 * Mathf.PI;
     }
@@ -168,6 +175,7 @@ public class PlayerBehaviour : MonoBehaviour {
         yield return null;          //exit coroutine
     }
 
+    //check for each player movement, using velocity vector * time to increase position vector
     void HandlePlayerMovement() {
 
         if (Input.GetKey(KeyCode.A) && sr.bounds.min.x >= -maxX) {
@@ -184,7 +192,8 @@ public class PlayerBehaviour : MonoBehaviour {
         }
 
     }
-    public string getPlayerStats() {
+    //returns a string of the players stats for displaying on the UI
+    public string GetPlayerStat() {
         return "Health " + currentHealth + "/" + maxHealth + "\t" +
             "Armor " + armor + "\n" +
             "Bullets " + numBulletsFired + "\t\t" +
@@ -192,6 +201,8 @@ public class PlayerBehaviour : MonoBehaviour {
             "Pierce " + numTargetsPierced + "\t\t" + 
             "Damage " + damageDone;
     }
+    //upgrades one of the player's stats based on the upgrade ID
+    //sets that state to be upgraded to level
     public void SetUpgradeLevel(int upgradeId, int level) {
         switch(upgradeId) {
             case 0: currentHealth = maxHealth = level * HEALTH_PER_UPGRADE + BASE_HEALTH;
@@ -209,6 +220,7 @@ public class PlayerBehaviour : MonoBehaviour {
         }
         upgradeLevels[upgradeId] = level;
     }
+    //getters and setters if needed
 
     public bool IsAlive() { return currentHealth > 0; }
     public void DecrementLives() { lives--; }
@@ -220,6 +232,7 @@ public class PlayerBehaviour : MonoBehaviour {
     }
     public int Lives { get { return lives; } }
 
+    //checks if the player can afford the item or not
     public bool CanPurchaseItem(int itemCost, int shoppingCartTotal) {
         return coins >= itemCost + shoppingCartTotal;
     }
