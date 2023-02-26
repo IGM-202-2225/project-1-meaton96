@@ -2769,6 +2769,7 @@ MonoBehaviour:
   playerScript: {fileID: 50402443}
   shopItemPrefab: {fileID: 4583877534180727446, guid: a056b51c60725d848942c74c05806d51, type: 3}
   canPurchase: 0
+  shoppingCartAmount: 0
 --- !u!114 &1788709103
 MonoBehaviour:
   m_ObjectHideFlags: 0

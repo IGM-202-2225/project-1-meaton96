@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,15 +11,20 @@ public class GameController : MonoBehaviour {
     [SerializeField] private GameObject enemyPreFab;                //enemy prefab
     [SerializeField] private float defaultEnemyXOffset;             //how far apart to draw the enemies when creating a standard line pattern
     [SerializeField] private GameObject shopCanvas;                 //pointer to shop game object
+    [SerializeField] private GameObject pauseCanvas;
     private Vector2 playerSpawn;                                    //location to respawn the player
     public GameObject player;                                       //pointer to player
     private PlayerBehaviour playerScript;                           //pointer to player script
-    private int enemyType = 0;                                      //stores what type of enemy to spawn
+                                                                    // private int enemyType = 0;                                      
     private int levelNumber;                                        //stores which number level player is on
-    private bool paused = true;                                     //bool if game is paused or not
+    private bool paused = false;                                     //bool if game is paused or not
     private const float ROW_SEP_Y = 2;
     private const float ENEMY_SCALE = .8f;
     private const float ENEMY_BASE_SPEED = 4;
+    private const int NUM_ENEMIES_PER_ROW = 12;
+    private const int ENEMY_Y_OFFSET = 5;
+    private readonly List<float> ENEMY_SPAWN_WEIGHTS = new(new float[] { 1f, 0f, 0f, 0f, 0f });
+    private readonly List<float> SPAWN_CHANGE_PER_LEVEL = new(new float[] { -.1f, .05f, .03f, .015f, .05f });
     // Start is called before the first frame update
     void Start() {
         //initialize shop variables
@@ -58,13 +64,13 @@ public class GameController : MonoBehaviour {
         }
     }
 
-   /// <summary>
-   /// spawns a single enemy
-   /// </summary>
-   /// <param name="enemyType"> int enemy type</param>
-   /// <param name="pos">vector position to instantitate the enemy prefab</param>
-   /// <param name="right">bool if the enemy is moving right or left</param>
-   /// <param name="scale">float to scale the enemy model to</param>
+    /// <summary>
+    /// spawns a single enemy
+    /// </summary>
+    /// <param name="enemyType"> int enemy type</param>
+    /// <param name="pos">vector position to instantitate the enemy prefab</param>
+    /// <param name="right">bool if the enemy is moving right or left</param>
+    /// <param name="scale">float to scale the enemy model to</param>
     private void SpawnEnemy(int enemyType, Vector3 pos, bool right, float scale) {
         GameObject enemy = Instantiate(enemyPreFab, pos, Quaternion.identity);
         enemy.GetComponent<EnemyBehaviour>().Init(enemyType, ENEMY_BASE_SPEED, right, scale);
@@ -75,12 +81,16 @@ public class GameController : MonoBehaviour {
     void Update() {
         //checks for player pause by pressing escape key
         if (Input.GetKeyDown(KeyCode.Escape)) {
-            if (!paused) {
-                StartShop(false);
-                paused = true;
+            if (shopCanvas.activeInHierarchy) {
+                shopCanvas.GetComponent<ShopBehaviour>().Exit();
             }
             else {
-                Resume();
+                if (paused) {
+                    Resume();
+                }
+                else {
+                    Pause();
+                }
             }
         }
         //checks for player alive, player spawning, and out of enemies conditions
@@ -94,45 +104,72 @@ public class GameController : MonoBehaviour {
             StartCoroutine(playerScript.Respawn());
         }
         if (!enemies.Any()) {
-            StartShop(true);
-        }
-    }
-    //resumes the game from the puase screen
-    public void Resume() {
-        if (enemies.Count == 0) {
-            //if enemies are 0 start a new level
             StartNewLevel();
-        }
-        else {
-            //otherwise just resume the game
-            Time.timeScale = 1f;
-            shopCanvas.SetActive(false);
-            paused = false;
         }
     }
 
-    //Starts the shop
-    //bool param to tell the shop if upgrades are purchasable or not
-    public void StartShop(bool betweenLevels) {
-        shopCanvas.GetComponent<ShopBehaviour>().canPurchase = betweenLevels;
+    public void Pause() {
+        pauseCanvas.SetActive(true);
+        paused = true;
         Time.timeScale = 0f;
-        shopCanvas.SetActive(true);
-        shopCanvas.GetComponent<ShopBehaviour>().OnShopShow();
     }
+    public void Resume() {
+
+        Time.timeScale = 1f;
+        pauseCanvas.SetActive(false);
+        paused = false;
+
+    }
+
+
     //starts a new level
     //exits the shop, resets timescale, increases level number
     public void StartNewLevel() {
-        paused = false;
-        shopCanvas.SetActive(false);
-        Time.timeScale = 1f;
+        //paused = false;
+        //shopCanvas.SetActive(false);
+        //Time.timeScale = 1f;
         levelNumber++;
-        SpawnDefaultEnemyWave(enemyType++, 1, 1);
+        //SpawnDefaultEnemyWave(1, 1, 1);
+        SpawnEnemyWave(5);
+        for (int x = 0; x < ENEMY_SPAWN_WEIGHTS.Count; x++) {
+            ENEMY_SPAWN_WEIGHTS[x] = ENEMY_SPAWN_WEIGHTS[x] + SPAWN_CHANGE_PER_LEVEL[x];
+        }
 
-        
 
-        //todo
     }
-    public void SpawnEnemyWave() {
+    public void SpawnEnemyWave(int numEnemies) {
+        float spawn = Random.Range(0, 1f);
+        float spawnX = NUM_ENEMIES_PER_ROW * defaultEnemyXOffset / -2;
+
+
+        int row = 0;
+        int count = 0;
+        bool right = true;
+        while (count < numEnemies) {
+
+
+            for (int y = 0; y < NUM_ENEMIES_PER_ROW && count < numEnemies; y++) {
+                int index = 0;
+                float spawnSum = 0;
+                while (spawn < spawnSum) {
+                    if (ENEMY_SPAWN_WEIGHTS[index] >= 1) {
+                        SPAWN_CHANGE_PER_LEVEL[index] = -.1f;
+                    }
+                    spawnSum += ENEMY_SPAWN_WEIGHTS[index];
+                    index++;
+                }
+
+                SpawnEnemy(index, new Vector3(
+                    spawnX + y * defaultEnemyXOffset,
+                    Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) + row * ROW_SEP_Y + 1, 0),
+                    right,
+                    ENEMY_SCALE);
+                count++;
+            }
+            row++;
+            right = !right;
+        }
 
     }
+
 }

@@ -9,8 +9,9 @@ public class ShopBehaviour : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI cristalText;           //text to display how much money the player has in the shop
     [SerializeField] public PlayerBehaviour playerScript;           //player pointer
     [SerializeField] private GameObject shopItemPrefab;             //prefab for making an item in the shop
+    [SerializeField] private GameObject pauseCanvas;
     private GameObject[] shopItems;                                 //holds all the current shop items
-    public bool canPurchase;                                        //bool if the its between rounds so the player can buy or not
+    //public bool canPurchase;                                        //bool if the its between rounds so the player can buy or not
     public int shoppingCartAmount;                                 //holds total cost of all upgrades selected for purchase
     private const float SHOP_ITEM_X = 160, SHOP_ITEM_START_Y = 95, SHOP_ITEM_OFFSET_Y = 120;
     
@@ -62,18 +63,21 @@ public class ShopBehaviour : MonoBehaviour {
 
     //resume the game when exiting the shop
     public void Exit() {
-        gameController.Resume();
+        gameObject.SetActive(false);
+        pauseCanvas.SetActive(true);
+
     }
     //purchases all shopping cart items 
     //and assigns the upgrade level to the player
     //removes shopping cart cost from player money
     //calls exit to resume the game
-    public void PurchaseAndExit() {
+    public void Purchase() {
         for (int x = 0; x < shopItems.Length; x++) {
             UpgradeBarBehaviour shopItemScript = shopItems[x].GetComponent<UpgradeBarBehaviour>();
+            
             playerScript.SetUpgradeLevel(shopItemScript.upgradeId, shopItemScript.GetUpgradeLevel());
         }
         playerScript.coins -= shoppingCartAmount;
-        Exit();
+        OnShopShow();
     }
 }

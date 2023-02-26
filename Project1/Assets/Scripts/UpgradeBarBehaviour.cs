@@ -89,6 +89,7 @@ public class UpgradeBarBehaviour : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
+        //Debug.Log(numTicksCart + " " + numTicksPurchased);
         //changes the visability and color of each tick
         //sets visable for shopping cart or already purchased upgrades
         //hides all others
@@ -114,26 +115,23 @@ public class UpgradeBarBehaviour : MonoBehaviour {
     }
     //increase the number of upgrades if possible
     public void IncreaseTicks() {
-        if (numTicksPurchased + numTicksCart < MAX_UPGRADE_AMOUNT &&
-            shopScript.playerScript.CanPurchaseItem(GetCostOfNextTick(), shopScript.shoppingCartAmount) &&
-            Enabled()) {
+        bool canAfford = shopScript.playerScript.CanPurchaseItem(GetCostOfNextTick(), shopScript.shoppingCartAmount);
+        
+        if (numTicksPurchased + numTicksCart < MAX_UPGRADE_AMOUNT && canAfford) {
             shopScript.AddToShoppingCart(GetCostOfNextTick());
             numTicksCart++;
 
         }
+        //bugged - not currently letting you buy stuff between levels
 
     }
     //decrease the number of upgrades if possible
     public void DecreaseTicks() {
-        if (numTicksCart > 0 && Enabled()) {
+        if (numTicksCart > 0) {
             numTicksCart--;
             shopScript.SubtractFromShoppingCart(GetCostOfNextTick());
         }
 
-    }
-    //checks if shop items are enabled (between rounds)
-    public bool Enabled() {
-        return shopScript.canPurchase;
     }
     //resets color for purchased upgrades
     public void ResetTicks() {

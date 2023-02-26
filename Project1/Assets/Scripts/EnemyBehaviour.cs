@@ -40,7 +40,7 @@ public class EnemyBehaviour : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         
-        //DefaultLateralMovement();                           //move
+        DefaultLateralMovement();                           //move
         if (health <= 0) {                                  //check for death
             isAlive = false;
             animator.SetTrigger(ANIMATOR_EXPLODE_TRIGGER);  //start explode animation
