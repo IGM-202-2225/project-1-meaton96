@@ -41,6 +41,7 @@ public class EnemyBehaviour : MonoBehaviour {
         Color.white,
         Color.green,
         Color.grey,
+        Color.yellow,   
         Color.red
     };
     public static readonly Color[] BULLET_COLORS = {

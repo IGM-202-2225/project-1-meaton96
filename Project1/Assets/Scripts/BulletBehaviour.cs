@@ -8,6 +8,7 @@ public class BulletBehaviour : MonoBehaviour {
     [SerializeField] private float speed;
     private List<GameObject> enemyList;
     public float angle;
+
     public int numEnemiesPierced;
     //private bool firedByPlayer;
     float maxY;
