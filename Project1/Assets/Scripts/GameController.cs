@@ -158,7 +158,7 @@ public class GameController : MonoBehaviour {
                     }
                     spawnSum += ENEMY_SPAWN_WEIGHTS[index];
                     index++;
-                    
+
                 }
 
                 SpawnEnemy(index, new Vector3(
