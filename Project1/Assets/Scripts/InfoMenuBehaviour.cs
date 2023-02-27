@@ -8,36 +8,32 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class InfoMenuBehaviour : MonoBehaviour {
-    [SerializeField] private GameObject pauseMenuCanvas;
-    [SerializeField] private TextMeshProUGUI titleText;
-    [SerializeField] private GameController gameController;
-    [SerializeField] private TextMeshProUGUI infoText;
-    [SerializeField] private Sprite[] ENEMY_SPRITES = new Sprite[5];
-    [SerializeField] private Sprite BULLET_SPRITE;
-    private int pageNumber;
-    [SerializeField] private Image[] images = new Image[3];
-    private const int PAGE_COUNT = 4;
-    // Start is called before the first frame update
-    void Start() {
+    [SerializeField] private GameObject pauseMenuCanvas;                        //pointer to pause menu
+    [SerializeField] private TextMeshProUGUI titleText;                         //holds title text mesh for changing title of info slide
+    [SerializeField] private GameController gameController;                     //game controller pointer
+    [SerializeField] private TextMeshProUGUI infoText;                          //holds info text mesh
+    [SerializeField] private Sprite[] ENEMY_SPRITES = new Sprite[5];            //holds enemy sprites to draw info images
+    [SerializeField] private Sprite BULLET_SPRITE;                              //holds the enemy bullet sprite
+    private int pageNumber;                                                     //keeps track of which page is currently displayed
+    [SerializeField] private Image[] images = new Image[3];                     //holds 3 images to display on info page
+    private const int PAGE_COUNT = 4;                                           //current max amount of pages 
 
-    }
-
-    // Update is called once per frame
-    void Update() {
-
-    }
+    //back button
     public void Back() {
         pauseMenuCanvas.SetActive(true);
         gameObject.SetActive(false);
     }
+    //increases the page number if possible, otherwise go back to beginning
     public void IncrementPageNumber() {
         pageNumber = pageNumber < PAGE_COUNT - 1 ? pageNumber + 1 : 0;
         ChangePage();
     }
+    //decreases the page number if possible, otherwise go to the end
     public void DecrementPageNumber() {
         pageNumber = pageNumber >= 0 ? pageNumber - 1 : PAGE_COUNT - 1;
         ChangePage();
     }
+    //called to swap the page
     public void ChangePage() {
         switch (pageNumber) {
             case 0:
@@ -49,11 +45,12 @@ public class InfoMenuBehaviour : MonoBehaviour {
             case 2:
                 DisplayBulletInfo(0, 1, 2);
                 break;
-            case 3: DisplayBulletInfo(3, 4);
+            case 3: 
+                DisplayBulletInfo(3, 4);
                 break;
         }
     }
-
+    //add up to 3 enemy info sections and add corresponding images
     private void DisplayEnemyInfo(params int[] indexes) {
         titleText.text = "Enemies";
         infoText.text = "";
@@ -71,15 +68,19 @@ public class InfoMenuBehaviour : MonoBehaviour {
             }
         }
     }
+    //add up to 3 bullet info sections and add corresponding images
     private void DisplayBulletInfo(params int[] indexes) {
+        //set title and reset textbox, adjust font size
         titleText.text = "Projectiles";
         infoText.text = "";
         infoText.fontSize = 20;
         for (int x = 0; x < images.Length; x++) {
+            //if less than 3 indexes were passed in, set alpha of extra images to 0 to hide
             if (x >= indexes.Length) {
                 images[x].color = new Color(0, 0, 0, 0);
             }
             else {
+                //otherwise add to the info text box and change the image sprite and color
                 infoText.text += "Damage\n" + indexes[x] * 10 + "-" + (indexes[x] + 1) * 10;
                 images[x].sprite = BULLET_SPRITE;
                 images[x].color = EnemyBehaviour.BULLET_COLORS[indexes[x]];

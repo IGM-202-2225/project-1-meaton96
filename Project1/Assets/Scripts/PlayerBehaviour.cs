@@ -8,6 +8,7 @@ public class PlayerBehaviour : MonoBehaviour {
     private float movementSpeed;                                                        //how fast the player can fly around
     [SerializeField] private GameObject bulletPrefab;                                   //pointer to bullet pre fab 
     [SerializeField] private Sprite[] shipSprites = new Sprite[3];                      //holds sprites for each ship type NYI
+    private Animator animator;
     public int shipType;                                                                //NYI
     private SpriteRenderer sr;                                                          //pointer to sprite renderer component
     private float maxX, maxY;                                                           //floats to hold screen dimensions to keep player on screen
@@ -37,20 +38,29 @@ public class PlayerBehaviour : MonoBehaviour {
     private const float BASE_ATTACK_DELAY = .5f;                                        //base time in seconds between player attacks
     private const float ARMOR_STRENGTH = 1.5f;                                           //how much damage each point of armor reduces
     public int[] upgradeLevels;                                                         //stores how many of each upgrade type player has purchased
-    public float AttackSpeed { get { return ((int) (10 / attackDelay)) / 10f; } }                        //float for displaying player attack speed on interface
+    public float AttackSpeed { get { return ((int)(10 / attackDelay)) / 10f; } }       //float for displaying player attack speed on interface
+
+    private enum State { Normal, Roll, Respawning }
+    private State state;
+    private float rollTimer = .2f;
+    private float rollCounter;
+
+    private Vector3 previousPos;
 
     // Start is called before the first frame update
     void Start() {
+        state = State.Normal;
         //set all variables to their base level
-        upgradeLevels = new int[6];            
+        upgradeLevels = new int[6];
         attackDelay = BASE_ATTACK_DELAY;
         armor = 0;
         movementSpeed = BASE_SPEED;
-        numBulletsFired = 1; 
+        numBulletsFired = 1;
         shipType = 0;   //only working ship type, others will have bad hitboxes
         lives = 3;
         coins = 100;
         sr = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) - 4;
 
@@ -75,7 +85,9 @@ public class PlayerBehaviour : MonoBehaviour {
     }
     // Update is called once per frame
     void Update() {
+
         //call player movement method and checks for player shooting
+
         HandlePlayerMovement();
         if (Input.GetKey(KeyCode.Space) && shootCount > attackDelay) {
             Shoot();
@@ -83,11 +95,15 @@ public class PlayerBehaviour : MonoBehaviour {
         }
         else
             shootCount += Time.deltaTime;
+
+        if (state == State.Roll)
+            HandleRoll();
+
     }
     //take damage by passed in value (reduced by armor)
     public void HitByBullet(float damage) {
         currentHealth -= damage - armor * ARMOR_STRENGTH;
-        if (currentHealth< 0) {
+        if (currentHealth < 0) {
             currentHealth = 0;
         }
     }
@@ -95,6 +111,9 @@ public class PlayerBehaviour : MonoBehaviour {
     public bool CheckCollision(GameObject bullet) {
         if (!bullet.TryGetComponent<EnemyBulletBehaviour>(out _))
             return false;
+        if (state == State.Respawning || state == State.Roll)
+            return false;
+
         //magnitute^2 < x^2 + y^2
         Vector3 bulletPos = bullet.transform.position;
         if (Mathf.Pow(transform.position.x - bulletPos.x, 2) +
@@ -131,8 +150,9 @@ public class PlayerBehaviour : MonoBehaviour {
     //creates bullet objects for each bullet shot
     //sets the angle and inits the bullet with the angle and damage done
     void Shoot() {
+
         float angle;
-        
+
         //changes how bullets are spawned based on how many are being fired
         for (int x = 0; x < numBulletsFired; x++) {
             if (numBulletsFired % 2 != 0) {
@@ -162,7 +182,8 @@ public class PlayerBehaviour : MonoBehaviour {
 
     //respawns the player
     public IEnumerator Respawn() {
-        isSpawning = true;                              //set spawning flag
+        state = State.Respawning;
+        //isSpawning = true;                              //set spawning flag
         for (int x = 0; x < 12; x++) {
             Color color = sr.color;
             color.a = color.a == 0 ? 255f : 0;
@@ -170,7 +191,8 @@ public class PlayerBehaviour : MonoBehaviour {
             yield return new WaitForSeconds(0.25f);     //alternates every .25seconds between 0 and 255 alpha for 3 seconds
         }
         currentHealth = maxHealth;  //reset health
-        isSpawning = false;         //clear flag
+                                    //isSpawning = false;         //clear flag
+        state = State.Normal;
         DecrementLives();           //lose a life
         yield return null;          //exit coroutine
     }
@@ -178,6 +200,7 @@ public class PlayerBehaviour : MonoBehaviour {
     //check for each player movement, using velocity vector * time to increase position vector
     void HandlePlayerMovement() {
 
+        previousPos = transform.position;
         if (Input.GetKey(KeyCode.A) && sr.bounds.min.x >= -maxX) {
             transform.position += movementSpeed * Time.deltaTime * Vector3.left;
         }
@@ -190,7 +213,22 @@ public class PlayerBehaviour : MonoBehaviour {
         if (Input.GetKey(KeyCode.W) && sr.bounds.max.y <= maxY) {
             transform.position += movementSpeed * Time.deltaTime * Vector3.up;
         }
+        if (Input.GetKeyDown(KeyCode.LeftShift)) {
+            state = State.Roll;
+            movementSpeed *= 2f;
+            animator.SetTrigger("Roll");
+        }
 
+    }
+    void HandleRoll() {
+        //Vector3 dir = (previousPos - transform.position).normalized;
+        //transform.position += movementSpeed * Time.deltaTime * dir;
+        rollCounter += Time.deltaTime;
+        if (rollCounter >= rollTimer) {
+            state = State.Normal;
+            movementSpeed /= 2f;
+            rollCounter = 0;
+        }
     }
     //returns a string of the players stats for displaying on the UI
     public string GetPlayerStat() {
@@ -198,24 +236,30 @@ public class PlayerBehaviour : MonoBehaviour {
             "Armor " + armor + "\n" +
             "Bullets " + numBulletsFired + "\t\t" +
             "Atl Speed " + AttackSpeed + "\n" +
-            "Pierce " + numTargetsPierced + "\t\t" + 
+            "Pierce " + numTargetsPierced + "\t\t" +
             "Damage " + damageDone;
     }
     //upgrades one of the player's stats based on the upgrade ID
     //sets that state to be upgraded to level
     public void SetUpgradeLevel(int upgradeId, int level) {
-        switch(upgradeId) {
-            case 0: currentHealth = maxHealth = level * HEALTH_PER_UPGRADE + BASE_HEALTH;
+        switch (upgradeId) {
+            case 0:
+                currentHealth = maxHealth = level * HEALTH_PER_UPGRADE + BASE_HEALTH;
                 break;
-            case 1: armor = level;
+            case 1:
+                armor = level;
                 break;
-            case 2: movementSpeed = BASE_SPEED + level * SPEED_PER_UPGRADE;
+            case 2:
+                movementSpeed = BASE_SPEED + level * SPEED_PER_UPGRADE;
                 break;
-            case 3: damageDone = level + 1;
+            case 3:
+                damageDone = level + 1;
                 break;
-            case 4: attackDelay = BASE_ATTACK_DELAY + level * ATTACK_SPEED_PER_UPGRADE;
+            case 4:
+                attackDelay = BASE_ATTACK_DELAY + level * ATTACK_SPEED_PER_UPGRADE;
                 break;
-            case 5: numBulletsFired = level + 1;
+            case 5:
+                numBulletsFired = level + 1;
                 break;
         }
         upgradeLevels[upgradeId] = level;

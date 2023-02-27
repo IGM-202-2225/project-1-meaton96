@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -127,7 +126,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
 
     public void Init(int type, float speed, bool right) {
-
+        //index out of bounds at wave 10 ?
         this.type = type;
         transform.localScale = new Vector3(scale, scale, scale);                    //shrink or grow enemy
         this.right = right;                                                         //set left or right direction
@@ -138,7 +137,7 @@ public class EnemyBehaviour : MonoBehaviour {
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         animator.SetTrigger("ship" + type);     //change the ship model by setting animation trigger
         this.speed = speed;
-        shootDelay = Random.Range(DEFAULT_SHOOT_DELAY / 2.0f, DEFAULT_SHOOT_DELAY) / (type + 1);
+        shootDelay = Random.Range(DEFAULT_SHOOT_DELAY / 2.0f, DEFAULT_SHOOT_DELAY); /// (type + 1); enemies scale harder
 
         numBulletsFired = NUM_BULLETS_EACH_ENEMY[type];
         damageDone = DAMAGE_DONE_EACH_ENEMY[type];

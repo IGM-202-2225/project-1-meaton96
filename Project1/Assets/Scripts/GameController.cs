@@ -161,6 +161,7 @@ public class GameController : MonoBehaviour {
 
                 }
 
+                //index out of bounds at wave 10
                 SpawnEnemy(index, new Vector3(
                     spawnX + y * defaultEnemyXOffset,
                     Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) + row * ROW_SEP_Y + 1, 0),
