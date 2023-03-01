@@ -11,14 +11,14 @@ public class EnemyBehaviour : MonoBehaviour {
     public float scale = .7f;                             //how big to scale the model and hitbox  
     private const float VERTICAL_ROW_SEPERATION = 3;      //how far apart the rows are, how many units to move down when doing default movement
     private const string ANIMATOR_EXPLODE_TRIGGER = "explode";  //trigger tag for starting explode animation
-    public bool isAlive;                //keeps track if the enemy is alive or not
-    private Animator animator;          //pointer to animator component
-    private float maxX;                 //how far left or right the enemy can move doing default movement
-    private bool right;                 //keeps track if the enemy is moving left or right
-    private float speed;                //how fast the enemy is moving
-    private SpriteRenderer sr;          //pointer to sprite render component
-    public float damageDone;                  //how much damage the enemy does with its shot
-    public int health;                  //how much health the enemy has
+    public bool isAlive;                                    //keeps track if the enemy is alive or not
+    private Animator animator;                              //pointer to animator component
+    private float maxX;                                     //how far left or right the enemy can move doing default movement
+    private bool right;                                  //keeps track if the enemy is moving left or right
+    private float speed;                                 //how fast the enemy is moving
+    private SpriteRenderer sr;                           //pointer to sprite render component
+    public float damageDone;                                //how much damage the enemy does with its shot
+    public int health;                                      //how much health the enemy has
     private float shootTimer = 0f, shootDelay;          //floats to track and delay the time between enemy shots
     [SerializeField] private GameObject bulletPrefab;   //prefab for the enemy bullet
     int type;
