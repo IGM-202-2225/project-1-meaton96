@@ -5117,6 +5117,8 @@ MonoBehaviour:
   shopItemPrefab: {fileID: 4583877534180727446, guid: a056b51c60725d848942c74c05806d51, type: 3}
   pauseCanvas: {fileID: 297592003}
   shoppingCartAmount: 0
+  div_one: 1
+  div_two: 1
 --- !u!114 &1788709103
 MonoBehaviour:
   m_ObjectHideFlags: 0

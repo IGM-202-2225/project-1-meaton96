@@ -15,16 +15,25 @@ public class ShopBehaviour : MonoBehaviour {
     public int shoppingCartAmount;                                 //holds total cost of all upgrades selected for purchase
     private float SHOP_ITEM_X = 0;
     private float SHOP_ITEM_START_Y = 95, SHOP_ITEM_OFFSET_Y = 120;
-    private float width, height;
-    SpriteRenderer sr;
+
+    public float div_one, div_two;
     
     //initialize shop items
     public void Init() {
-        sr = GetComponent<SpriteRenderer>();
+        div_one = div_two = .035f;
         shopItems = new GameObject[6];
-        SHOP_ITEM_X = Screen.width / 2.0f;
-        SHOP_ITEM_START_Y = Screen.height / 1.5f;
-        SHOP_ITEM_OFFSET_Y = Screen.height / 1.2f;
+        //SHOP_ITEM_X = Screen.width / 2.0f;
+        //SHOP_ITEM_START_Y = Screen.height / 1.5f;
+        //SHOP_ITEM_OFFSET_Y = Screen.height / 1.2f;
+        SHOP_ITEM_X = Camera.main.ScreenToWorldPoint(Vector3.zero).x / .04f;
+        float height = Camera.main.ScreenToWorldPoint(Vector3.zero).y;
+        SHOP_ITEM_START_Y = height / div_one;
+        SHOP_ITEM_OFFSET_Y = height / div_two;
+        Debug.Log(SHOP_ITEM_X + ", " + SHOP_ITEM_START_Y + ", " + SHOP_ITEM_OFFSET_Y);
+
+
+        //working on arranging shop items
+
         Vector3 pos;
         //distribute new shop items across the screen
         for (int x = 0; x < shopItems.Length; x++) {
