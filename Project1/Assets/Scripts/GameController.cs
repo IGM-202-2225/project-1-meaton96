@@ -25,8 +25,10 @@ public class GameController : MonoBehaviour {
     private const int ENEMY_Y_OFFSET = 5;
     private readonly List<float> ENEMY_SPAWN_WEIGHTS = new(new float[] { 1f, 0f, 0f, 0f, 0f });
     private readonly List<float> SPAWN_CHANGE_PER_LEVEL = new(new float[] { -.1f, .05f, .03f, .015f, .05f });
+    private float BOTTOM_OF_SCREEN;
     // Start is called before the first frame update
     void Start() {
+        BOTTOM_OF_SCREEN = -Camera.main.ScreenToWorldPoint(Vector3.zero).y;
         //initialize shop variables
         shopCanvas.GetComponent<ShopBehaviour>().Init();
         levelNumber = 0;
@@ -106,6 +108,16 @@ public class GameController : MonoBehaviour {
         if (!enemies.Any()) {
             StartNewLevel();
         }
+        
+    }
+    void CheckForEnemyOffScreen() {
+        Debug.Log(BOTTOM_OF_SCREEN);
+        enemies.ForEach(enemy => {
+            if (enemy.transform.position.y < BOTTOM_OF_SCREEN) {
+                enemies.Remove(enemy);
+                return;
+            }
+        });
     }
 
     public void Pause() {

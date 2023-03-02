@@ -54,7 +54,6 @@ public class InfoMenuBehaviour : MonoBehaviour {
     private void DisplayEnemyInfo(params int[] indexes) {
         titleText.text = "Enemies";
         infoText.text = "";
-        infoText.fontSize = 18;
         for (int x = 0; x < images.Length; x++) {
             if (x >= indexes.Length) {
                 images[x].color = new Color(0, 0, 0, 0);
@@ -73,7 +72,6 @@ public class InfoMenuBehaviour : MonoBehaviour {
         //set title and reset textbox, adjust font size
         titleText.text = "Projectiles";
         infoText.text = "";
-        infoText.fontSize = 20;
         for (int x = 0; x < images.Length; x++) {
             //if less than 3 indexes were passed in, set alpha of extra images to 0 to hide
             if (x >= indexes.Length) {

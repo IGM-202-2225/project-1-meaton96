@@ -37,8 +37,7 @@ Player has a healthbar and lives, when your health runs out you will respawn at 
 Player shooting delay: there is a time delay between allowing the player to shoot, starting at .2 seconds, this is done with a simple timer float by increasing it by Time.deltaTime
 
 Enemy types:
-currently 5 simple enemy types, each type has increasing amount of health and rate of fire (NYI)
-bosses (NYI)
+currently 5 simple enemy types, each type has increasing amount of health, damage, and bullet amounts
 
 ## Sources
 
@@ -49,7 +48,8 @@ bosses (NYI)
 
 ## Known Issues
 
-_List any errors, lack of error checking, or specific information that I need to know to run your program_
+Game crashes at wave 10
+Died and lives dropped to -900, next wave didnt spawn?
 
 ### Requirements not completed
 

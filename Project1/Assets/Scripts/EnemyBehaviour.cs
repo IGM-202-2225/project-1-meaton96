@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class EnemyBehaviour : MonoBehaviour {
 
-    private const float RADIUS = .7f;                     //radius of hitbox
+    private const float HITBOX_RADIUS = .7f;                     //radius of hitbox
     private const float DEFAULT_SHOOT_DELAY = 10f;        //default delay between shooting
     public float scale = .7f;                             //how big to scale the model and hitbox  
     private const float VERTICAL_ROW_SEPERATION = 3;      //how far apart the rows are, how many units to move down when doing default movement
@@ -23,11 +23,13 @@ public class EnemyBehaviour : MonoBehaviour {
     private float shootTimer = 0f, shootDelay;          //floats to track and delay the time between enemy shots
     [SerializeField] private GameObject bulletPrefab;   //prefab for the enemy bullet
     int type;
+    private PlayerBehaviour playerScript;
     public int numBulletsFired;
     public float bulletSpreadAngle = 10f;
     private const int BASE_SCORE = 100;
     private const float BASE_COIN_DROP_CHANCE = .5f;
     private const float BULLET_LENGTH = .45f;
+    private const float DAMAGE_ON_COLLISION = 10f;
     public static readonly float[] DAMAGE_DONE_EACH_ENEMY = {
         10f,
         10f,
@@ -61,6 +63,14 @@ public class EnemyBehaviour : MonoBehaviour {
             isAlive = false;
             animator.SetTrigger(ANIMATOR_EXPLODE_TRIGGER);  //start explode animation
         }
+        if (isAlive) {
+            if (playerScript.CheckCollision(gameObject, HITBOX_RADIUS, 0f, 0f)) {
+                isAlive= false;
+                animator.SetTrigger(ANIMATOR_EXPLODE_TRIGGER);
+                playerScript.TakeDamage(DAMAGE_ON_COLLISION, false);
+            }
+        }
+
         if (shootTimer >= shootDelay) {
             Shoot();
             shootTimer = 0;
@@ -138,7 +148,7 @@ public class EnemyBehaviour : MonoBehaviour {
         animator.SetTrigger("ship" + type);     //change the ship model by setting animation trigger
         this.speed = speed;
         shootDelay = Random.Range(DEFAULT_SHOOT_DELAY / 2.0f, DEFAULT_SHOOT_DELAY); /// (type + 1); enemies scale harder
-
+        playerScript = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
         numBulletsFired = NUM_BULLETS_EACH_ENEMY[type];
         damageDone = DAMAGE_DONE_EACH_ENEMY[type];
         sr.color = COLOR_EACH_ENEMY[type];
@@ -168,7 +178,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
         if (Mathf.Pow(transform.position.x - center.x, 2) +
             Mathf.Pow(transform.position.y - center.y, 2) <=
-            Mathf.Pow(RADIUS * scale + radius, 2)) {
+            Mathf.Pow(HITBOX_RADIUS * scale + radius, 2)) {
             return true;
         }
         return false;

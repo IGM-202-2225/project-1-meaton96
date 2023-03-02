@@ -62,7 +62,7 @@ public class PlayerBehaviour : MonoBehaviour {
         sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
-        maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) - 4;
+        maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) - 2;
 
         currentHealth = maxHealth = BASE_HEALTH;
 
@@ -101,33 +101,31 @@ public class PlayerBehaviour : MonoBehaviour {
 
     }
     //take damage by passed in value (reduced by armor)
-    public void HitByBullet(float damage) {
-        currentHealth -= damage - armor * ARMOR_STRENGTH;
+    public void TakeDamage(float damage, bool isBullet) {
+        currentHealth -= damage - (isBullet ? armor * ARMOR_STRENGTH : 0);
         if (currentHealth < 0) {
             currentHealth = 0;
         }
     }
     //check for collisions with enemy bullet, check outer radius circle before calling inner circle collision
-    public bool CheckCollision(GameObject bullet) {
-        if (!bullet.TryGetComponent<EnemyBulletBehaviour>(out _))
-            return false;
+    public bool CheckCollision(GameObject bullet, float radius, float offsetX, float offSetY) {
         if (state == State.Respawning || state == State.Roll)
             return false;
 
         //magnitute^2 < x^2 + y^2
         Vector3 bulletPos = bullet.transform.position;
-        if (Mathf.Pow(transform.position.x - bulletPos.x, 2) +
-            Mathf.Pow(transform.position.y - bulletPos.y + EnemyBulletBehaviour.HIT_BOX_OFFSET_Y, 2) <=
-            Mathf.Pow(firstRadius + EnemyBulletBehaviour.HIT_BOX_RADIUS, 2)) {
-            return CheckSecondCollision(bullet);
+        if (Mathf.Pow(transform.position.x - bulletPos.x + offsetX, 2) +
+            Mathf.Pow(transform.position.y - bulletPos.y + offSetY, 2) <=
+            Mathf.Pow(firstRadius + radius, 2)) {
+            return CheckSecondCollision(bullet, radius, offsetX, offSetY);
         }
         return false;
     }
     //checks each of the 5 inner hitbox circles against bullet hitbox to check for actual
     //ship collisions
-    private bool CheckSecondCollision(GameObject bullet) {
-        Vector3 bulletPos = new(bullet.transform.position.x,
-            bullet.transform.position.y + EnemyBulletBehaviour.HIT_BOX_OFFSET_Y,
+    private bool CheckSecondCollision(GameObject bullet, float radius, float offsetX, float offSetY) {
+        Vector3 bulletPos = new(bullet.transform.position.x + offsetX,
+            bullet.transform.position.y + offSetY,
             0);
 
         Vector3[] hitBoxCenters = new Vector3[5];
@@ -141,7 +139,7 @@ public class PlayerBehaviour : MonoBehaviour {
         for (int x = 0; x < hitBoxCenters.Length; x++) {
             if (Mathf.Pow(hitBoxCenters[x].x - bulletPos.x, 2) +
                 Mathf.Pow(hitBoxCenters[x].y - bulletPos.y, 2) <=
-                Mathf.Pow(EnemyBulletBehaviour.HIT_BOX_RADIUS + secondRadius, 2))
+                Mathf.Pow(radius + secondRadius, 2))
                 return true;
         }
 

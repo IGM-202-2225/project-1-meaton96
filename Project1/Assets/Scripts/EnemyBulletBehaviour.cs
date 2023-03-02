@@ -40,8 +40,8 @@ public class EnemyBulletBehaviour : MonoBehaviour {
 
     //checks if the bullet hit the player by calling player CheckCollision
     void CheckCollisions() {
-        if (playerScript.CheckCollision(gameObject)) {
-            playerScript.HitByBullet(damage);
+        if (playerScript.CheckCollision(gameObject, HIT_BOX_RADIUS, HIT_BOX_OFFSET_Y, 0f)) {
+            playerScript.TakeDamage(damage, true);
             Destroy(gameObject);
         }
 

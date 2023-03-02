@@ -13,11 +13,18 @@ public class ShopBehaviour : MonoBehaviour {
     private GameObject[] shopItems;                                 //holds all the current shop items
     //public bool canPurchase;                                        //bool if the its between rounds so the player can buy or not
     public int shoppingCartAmount;                                 //holds total cost of all upgrades selected for purchase
-    private const float SHOP_ITEM_X = 160, SHOP_ITEM_START_Y = 95, SHOP_ITEM_OFFSET_Y = 120;
+    private float SHOP_ITEM_X = 0;
+    private float SHOP_ITEM_START_Y = 95, SHOP_ITEM_OFFSET_Y = 120;
+    private float width, height;
+    SpriteRenderer sr;
     
     //initialize shop items
     public void Init() {
+        sr = GetComponent<SpriteRenderer>();
         shopItems = new GameObject[6];
+        SHOP_ITEM_X = Screen.width / 2.0f;
+        SHOP_ITEM_START_Y = Screen.height / 1.5f;
+        SHOP_ITEM_OFFSET_Y = Screen.height / 1.2f;
         Vector3 pos;
         //distribute new shop items across the screen
         for (int x = 0; x < shopItems.Length; x++) {
