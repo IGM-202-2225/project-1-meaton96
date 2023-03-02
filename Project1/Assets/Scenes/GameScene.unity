@@ -1347,11 +1347,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 810457252}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000017166, y: 771}
+  m_AnchoredPosition: {x: 0, y: 771}
   m_SizeDelta: {x: 423.538, y: 181.421}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &462151205
@@ -2058,17 +2058,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 765815176}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1685422360}
-  m_RootOrder: 1
+  m_Father: {fileID: 810457252}
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -253, y: -386.33}
+  m_AnchoredPosition: {x: -256.55, y: 0.0045166016}
   m_SizeDelta: {x: 170.959, y: 176.68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &792972841
@@ -2242,6 +2242,7 @@ RectTransform:
   - {fileID: 1140703111}
   - {fileID: 1906955083}
   - {fileID: 258314304}
+  - {fileID: 765815179}
   - {fileID: 462151204}
   m_Father: {fileID: 1685422360}
   m_RootOrder: 0
@@ -2590,6 +2591,7 @@ MonoBehaviour:
   defaultEnemyXOffset: 2
   shopCanvas: {fileID: 1788709101}
   pauseCanvas: {fileID: 297592003}
+  infoCanvas: {fileID: 1546072999}
   player: {fileID: 50402440}
   levelNumber: 0
 --- !u!4 &826599071
@@ -5048,7 +5050,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 810457252}
-  - {fileID: 765815179}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

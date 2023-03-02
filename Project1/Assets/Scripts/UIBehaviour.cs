@@ -20,6 +20,7 @@ public class UIBehaviour : MonoBehaviour {
     void Start() {
         infoDisplayed = infoText.IsActive();
         playerScript = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
+        
     }
 
     // Update is called once per frame

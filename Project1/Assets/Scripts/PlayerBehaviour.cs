@@ -11,7 +11,7 @@ public class PlayerBehaviour : MonoBehaviour {
     private Animator animator;
     public int shipType;                                                                //NYI
     private SpriteRenderer sr;                                                          //pointer to sprite renderer component
-    private float maxX, maxY;                                                           //floats to hold screen dimensions to keep player on screen
+    private float maxX, maxY, minY;                                                           //floats to hold screen dimensions to keep player on screen
     [SerializeField] private float bulletSpawnOffset;                                   //how far above the player to spawn the bullet
     [SerializeField] private float attackDelay;                                         //in seconds how long between player can fire bullets
     private float shootCount = 0;                                                       //counter for time passage for shooting
@@ -45,7 +45,7 @@ public class PlayerBehaviour : MonoBehaviour {
     private float rollTimer = .2f;
     private float rollCounter;
 
-    private Vector3 previousPos;
+    
 
     // Start is called before the first frame update
     void Start() {
@@ -53,6 +53,7 @@ public class PlayerBehaviour : MonoBehaviour {
         //set all variables to their base level
         upgradeLevels = new int[6];
         attackDelay = BASE_ATTACK_DELAY;
+
         armor = 0;
         movementSpeed = BASE_SPEED;
         numBulletsFired = 1;
@@ -62,7 +63,8 @@ public class PlayerBehaviour : MonoBehaviour {
         sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
-        maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) - 2;
+        maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) - 1;
+        minY = -maxY + 2;
 
         currentHealth = maxHealth = BASE_HEALTH;
 
@@ -198,11 +200,11 @@ public class PlayerBehaviour : MonoBehaviour {
     //check for each player movement, using velocity vector * time to increase position vector
     void HandlePlayerMovement() {
 
-        previousPos = transform.position;
+        
         if (Input.GetKey(KeyCode.A) && sr.bounds.min.x >= -maxX) {
             transform.position += movementSpeed * Time.deltaTime * Vector3.left;
         }
-        if (Input.GetKey(KeyCode.S) && sr.bounds.min.y >= -maxY) {
+        if (Input.GetKey(KeyCode.S) && sr.bounds.min.y >= minY) {
             transform.position += movementSpeed * Time.deltaTime * Vector3.down;
         }
         if (Input.GetKey(KeyCode.D) && sr.bounds.max.x <= maxX) {

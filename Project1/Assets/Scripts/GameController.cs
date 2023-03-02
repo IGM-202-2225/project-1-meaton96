@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour {
     [SerializeField] private float defaultEnemyXOffset;             //how far apart to draw the enemies when creating a standard line pattern
     [SerializeField] private GameObject shopCanvas;                 //pointer to shop game object
     [SerializeField] private GameObject pauseCanvas;
+    [SerializeField] private GameObject infoCanvas;
     private Vector2 playerSpawn;                                    //location to respawn the player
     public GameObject player;                                       //pointer to player
     private PlayerBehaviour playerScript;                           //pointer to player script
@@ -81,10 +82,19 @@ public class GameController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        foreach (GameObject enemy in enemies) {
+            if (!enemy.GetComponent<EnemyBehaviour>().isAlive) {
+                enemies.Remove(enemy);
+                break;
+            }
+        }
         //checks for player pause by pressing escape key
         if (Input.GetKeyDown(KeyCode.Escape)) {
             if (shopCanvas.activeInHierarchy) {
                 shopCanvas.GetComponent<ShopBehaviour>().Exit();
+            }
+            else if (infoCanvas.activeInHierarchy) {
+                infoCanvas.GetComponent<InfoMenuBehaviour>().Back();
             }
             else {
                 if (paused) {
