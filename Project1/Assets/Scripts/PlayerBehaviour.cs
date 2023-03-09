@@ -8,6 +8,7 @@ public class PlayerBehaviour : MonoBehaviour {
     private float movementSpeed;                                                        //how fast the player can fly around
     [SerializeField] private GameObject bulletPrefab;                                   //pointer to bullet pre fab 
     [SerializeField] private Sprite[] shipSprites = new Sprite[3];                      //holds sprites for each ship type NYI
+    [SerializeField] private GameObject missilePrefab;
     private Animator animator;
     public int shipType;                                                                //NYI
     private SpriteRenderer sr;                                                          //pointer to sprite renderer component
@@ -44,11 +45,12 @@ public class PlayerBehaviour : MonoBehaviour {
     private State state;
     private float rollTimer = .2f;
     private float rollCounter;
-
+    public int numMissiles;
     
 
     // Start is called before the first frame update
     void Start() {
+        numMissiles = 100;
         state = State.Normal;
         //set all variables to their base level
         upgradeLevels = new int[6];
@@ -59,7 +61,7 @@ public class PlayerBehaviour : MonoBehaviour {
         numBulletsFired = 1;
         shipType = 0;   //only working ship type, others will have bad hitboxes
         lives = 3;
-        coins = 100;
+        coins = 5;
         sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
@@ -100,7 +102,10 @@ public class PlayerBehaviour : MonoBehaviour {
 
         if (state == State.Roll)
             HandleRoll();
-
+        if (currentHealth <= 0 && state != State.Respawning) {
+            state = State.Respawning;
+            StartCoroutine(Respawn());
+        }
     }
     //take damage by passed in value (reduced by armor)
     public void TakeDamage(float damage, bool isBullet) {
@@ -182,8 +187,6 @@ public class PlayerBehaviour : MonoBehaviour {
 
     //respawns the player
     public IEnumerator Respawn() {
-        state = State.Respawning;
-        //isSpawning = true;                              //set spawning flag
         for (int x = 0; x < 12; x++) {
             Color color = sr.color;
             color.a = color.a == 0 ? 255f : 0;
@@ -191,7 +194,6 @@ public class PlayerBehaviour : MonoBehaviour {
             yield return new WaitForSeconds(0.25f);     //alternates every .25seconds between 0 and 255 alpha for 3 seconds
         }
         currentHealth = maxHealth;  //reset health
-                                    //isSpawning = false;         //clear flag
         state = State.Normal;
         DecrementLives();           //lose a life
         yield return null;          //exit coroutine
@@ -218,11 +220,19 @@ public class PlayerBehaviour : MonoBehaviour {
             movementSpeed *= 2f;
             animator.SetTrigger("Roll");
         }
-
+        if (Input.GetMouseButtonDown(0)) {
+            if (numMissiles > 0) {
+                FireMissile();
+            }
+        }
+    }
+    void FireMissile() {
+        numMissiles--;
+        GameObject missile = Instantiate(missilePrefab, transform.position, Quaternion.identity);
+        missile.GetComponent<MissileBehaviour>().Fire(
+                Camera.main.ScreenToWorldPoint(Input.mousePosition), true);
     }
     void HandleRoll() {
-        //Vector3 dir = (previousPos - transform.position).normalized;
-        //transform.position += movementSpeed * Time.deltaTime * dir;
         rollCounter += Time.deltaTime;
         if (rollCounter >= rollTimer) {
             state = State.Normal;

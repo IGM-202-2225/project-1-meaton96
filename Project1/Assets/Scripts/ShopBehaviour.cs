@@ -9,9 +9,8 @@ public class ShopBehaviour : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI cristalText;           //text to display how much money the player has in the shop
     [SerializeField] public PlayerBehaviour playerScript;           //player pointer
     [SerializeField] private GameObject shopItemPrefab;             //prefab for making an item in the shop
-    [SerializeField] private GameObject pauseCanvas;
-    private GameObject[] shopItems;                                 //holds all the current shop items
-    //public bool canPurchase;                                        //bool if the its between rounds so the player can buy or not
+    [SerializeField] private GameObject pauseCanvas;                
+    private GameObject[] shopItems;                                 //holds all the current shop items  
     public int shoppingCartAmount;                                 //holds total cost of all upgrades selected for purchase
     private float SHOP_ITEM_X = 0;
     private float SHOP_ITEM_START_Y = 95, SHOP_ITEM_OFFSET_Y = 120;
@@ -29,7 +28,6 @@ public class ShopBehaviour : MonoBehaviour {
         float height = Camera.main.ScreenToWorldPoint(Vector3.zero).y;
         SHOP_ITEM_START_Y = height / div_one;
         SHOP_ITEM_OFFSET_Y = height / div_two;
-        Debug.Log(SHOP_ITEM_X + ", " + SHOP_ITEM_START_Y + ", " + SHOP_ITEM_OFFSET_Y);
 
 
         //working on arranging shop items

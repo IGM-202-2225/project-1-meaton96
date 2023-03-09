@@ -113,7 +113,7 @@ public class GameController : MonoBehaviour {
             }
             //reset player position and start player spawn routine
             player.transform.position = playerSpawn;
-            StartCoroutine(playerScript.Respawn());
+            
         }
         if (!enemies.Any()) {
             StartNewLevel();

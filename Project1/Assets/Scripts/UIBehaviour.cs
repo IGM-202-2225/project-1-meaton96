@@ -13,6 +13,7 @@ public class UIBehaviour : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI enemiesRemainingText;
     [SerializeField] private GameObject infoBox;
     [SerializeField] private TextMeshProUGUI levelNumText;
+    [SerializeField] private TextMeshProUGUI missileText;
     [SerializeField] private GameController gameController;
     private PlayerBehaviour playerScript;
     private bool infoDisplayed;
@@ -38,6 +39,7 @@ public class UIBehaviour : MonoBehaviour {
         levelNumText.text = "Level\n" + gameController.levelNumber;
         livesText.text = "Lives\n" + playerScript.Lives;
         enemiesRemainingText.text = "Remaining: " + gameController.enemies.Count;
+        missileText.text = playerScript.numMissiles + "";
         
 
     }
