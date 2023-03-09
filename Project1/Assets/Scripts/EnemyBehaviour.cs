@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyBehaviour : MonoBehaviour {
 
-    private const float RADIUS = .7f;                     //radius of hitbox
+    private const float HITBOX_RADIUS = .7f;                     //radius of hitbox
     private const float DEFAULT_SHOOT_DELAY = 10f;        //default delay between shooting
     public float scale = .7f;                             //how big to scale the model and hitbox  
     private const float VERTICAL_ROW_SEPERATION = 3;      //how far apart the rows are, how many units to move down when doing default movement
@@ -22,20 +23,29 @@ public class EnemyBehaviour : MonoBehaviour {
     private float shootTimer = 0f, shootDelay;          //floats to track and delay the time between enemy shots
     [SerializeField] private GameObject bulletPrefab;   //prefab for the enemy bullet
     int type;
+    private PlayerBehaviour playerScript;
     public int numBulletsFired;
     public float bulletSpreadAngle = 10f;
     private const int BASE_SCORE = 100;
     private const float BASE_COIN_DROP_CHANCE = .5f;
     private const float BULLET_LENGTH = .45f;
-    private readonly float[] DAMAGE_DONE_EACH_ENEMY = {
+    private const float DAMAGE_ON_COLLISION = 10f;
+    public static readonly float[] DAMAGE_DONE_EACH_ENEMY = {
         10f,
         10f,
         20f,
         25f,
         35f
     };
-
-    private Color[] BULLET_COLORS = {
+    public static readonly int[] NUM_BULLETS_EACH_ENEMY = { 1,3,1,4,6 };
+    public static readonly Color[] COLOR_EACH_ENEMY = {
+        Color.white,
+        Color.green,
+        Color.grey,
+        Color.yellow,   
+        Color.red
+    };
+    public static readonly Color[] BULLET_COLORS = {
         Color.white,
         Color.blue,
         Color.green,
@@ -43,14 +53,24 @@ public class EnemyBehaviour : MonoBehaviour {
         Color.red,
     };
 
+    
+
     // Update is called once per frame
     void Update() {
-        
+
         DefaultLateralMovement();                           //move
         if (health <= 0) {                                  //check for death
             isAlive = false;
             animator.SetTrigger(ANIMATOR_EXPLODE_TRIGGER);  //start explode animation
         }
+        if (isAlive) {
+            if (playerScript.CheckCollision(gameObject, HITBOX_RADIUS, 0f, 0f)) {
+                isAlive= false;
+                animator.SetTrigger(ANIMATOR_EXPLODE_TRIGGER);
+                playerScript.TakeDamage(DAMAGE_ON_COLLISION, false);
+            }
+        }
+
         if (shootTimer >= shootDelay) {
             Shoot();
             shootTimer = 0;
@@ -116,7 +136,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
 
     public void Init(int type, float speed, bool right) {
-        
+        //index out of bounds at wave 10 ?
         this.type = type;
         transform.localScale = new Vector3(scale, scale, scale);                    //shrink or grow enemy
         this.right = right;                                                         //set left or right direction
@@ -127,39 +147,11 @@ public class EnemyBehaviour : MonoBehaviour {
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         animator.SetTrigger("ship" + type);     //change the ship model by setting animation trigger
         this.speed = speed;
-        shootDelay = Random.Range(DEFAULT_SHOOT_DELAY/ 2.0f, DEFAULT_SHOOT_DELAY) / (type + 1); 
-
-        switch(type) {
-            case 0: 
-                sr.color = Color.white;
-                numBulletsFired = 1;
-                damageDone = 10;
-                break;
-            case 1: sr.color = Color.green;
-                numBulletsFired = 3;
-                damageDone = 10;
-                break;
-            case 2: 
-                sr.color = Color.grey;
-                numBulletsFired = 1;
-                damageDone = 20;
-                break;
-            case 3: 
-                sr.color = Color.red;
-                numBulletsFired = 4;
-                damageDone = 20;
-                break;
-            case 4:
-                sr.color = Color.blue;
-                numBulletsFired = 3;
-                damageDone = 30;
-                break;
-            case 5: sr.color = Color.magenta;
-                numBulletsFired = 6;
-                damageDone = 35;
-                break;
-        }
+        shootDelay = Random.Range(DEFAULT_SHOOT_DELAY / 2.0f, DEFAULT_SHOOT_DELAY); /// (type + 1); enemies scale harder
+        playerScript = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
+        numBulletsFired = NUM_BULLETS_EACH_ENEMY[type];
         damageDone = DAMAGE_DONE_EACH_ENEMY[type];
+        sr.color = COLOR_EACH_ENEMY[type];
 
     }
     public void SetBulletsFired(int num) {
@@ -186,7 +178,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
         if (Mathf.Pow(transform.position.x - center.x, 2) +
             Mathf.Pow(transform.position.y - center.y, 2) <=
-            Mathf.Pow(RADIUS * scale + radius, 2)) {
+            Mathf.Pow(HITBOX_RADIUS * scale + radius, 2)) {
             return true;
         }
         return false;

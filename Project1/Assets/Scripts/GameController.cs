@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour {
     [SerializeField] private float defaultEnemyXOffset;             //how far apart to draw the enemies when creating a standard line pattern
     [SerializeField] private GameObject shopCanvas;                 //pointer to shop game object
     [SerializeField] private GameObject pauseCanvas;
+    [SerializeField] private GameObject infoCanvas;
     private Vector2 playerSpawn;                                    //location to respawn the player
     public GameObject player;                                       //pointer to player
     private PlayerBehaviour playerScript;                           //pointer to player script
@@ -25,8 +26,10 @@ public class GameController : MonoBehaviour {
     private const int ENEMY_Y_OFFSET = 5;
     private readonly List<float> ENEMY_SPAWN_WEIGHTS = new(new float[] { 1f, 0f, 0f, 0f, 0f });
     private readonly List<float> SPAWN_CHANGE_PER_LEVEL = new(new float[] { -.1f, .05f, .03f, .015f, .05f });
+    private float BOTTOM_OF_SCREEN;
     // Start is called before the first frame update
     void Start() {
+        BOTTOM_OF_SCREEN = -Camera.main.ScreenToWorldPoint(Vector3.zero).y;
         //initialize shop variables
         shopCanvas.GetComponent<ShopBehaviour>().Init();
         levelNumber = 0;
@@ -79,10 +82,19 @@ public class GameController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        foreach (GameObject enemy in enemies) {
+            if (!enemy.GetComponent<EnemyBehaviour>().isAlive) {
+                enemies.Remove(enemy);
+                break;
+            }
+        }
         //checks for player pause by pressing escape key
         if (Input.GetKeyDown(KeyCode.Escape)) {
             if (shopCanvas.activeInHierarchy) {
                 shopCanvas.GetComponent<ShopBehaviour>().Exit();
+            }
+            else if (infoCanvas.activeInHierarchy) {
+                infoCanvas.GetComponent<InfoMenuBehaviour>().Back();
             }
             else {
                 if (paused) {
@@ -101,11 +113,21 @@ public class GameController : MonoBehaviour {
             }
             //reset player position and start player spawn routine
             player.transform.position = playerSpawn;
-            StartCoroutine(playerScript.Respawn());
+            
         }
         if (!enemies.Any()) {
             StartNewLevel();
         }
+        
+    }
+    void CheckForEnemyOffScreen() {
+        Debug.Log(BOTTOM_OF_SCREEN);
+        enemies.ForEach(enemy => {
+            if (enemy.transform.position.y < BOTTOM_OF_SCREEN) {
+                enemies.Remove(enemy);
+                return;
+            }
+        });
     }
 
     public void Pause() {
@@ -158,9 +180,10 @@ public class GameController : MonoBehaviour {
                     }
                     spawnSum += ENEMY_SPAWN_WEIGHTS[index];
                     index++;
-                    
+
                 }
 
+                //index out of bounds at wave 10
                 SpawnEnemy(index, new Vector3(
                     spawnX + y * defaultEnemyXOffset,
                     Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) + row * ROW_SEP_Y + 1, 0),

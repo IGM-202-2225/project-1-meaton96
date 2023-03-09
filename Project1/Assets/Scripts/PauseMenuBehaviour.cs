@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenuBehaviour : MonoBehaviour {
 
+    [SerializeField] private GameObject infoMenuCanvas;
     [SerializeField] private GameController gameController;
     [SerializeField] private GameObject shopCanvas;
     // Start is called before the first frame update
@@ -30,5 +31,10 @@ public class PauseMenuBehaviour : MonoBehaviour {
         shopCanvas.GetComponent<ShopBehaviour>().OnShopShow();
         gameObject.SetActive(false);
 
+    }
+    public void Info() {
+        gameObject.SetActive(false);
+        infoMenuCanvas.SetActive(true);
+        infoMenuCanvas.GetComponent<InfoMenuBehaviour>().ChangePage();
     }
 }
