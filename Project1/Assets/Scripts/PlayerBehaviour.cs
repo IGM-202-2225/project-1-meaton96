@@ -8,6 +8,7 @@ public class PlayerBehaviour : MonoBehaviour {
     private float movementSpeed;                                                        //how fast the player can fly around
     [SerializeField] private GameObject bulletPrefab;                                   //pointer to bullet pre fab 
     [SerializeField] private Sprite[] shipSprites = new Sprite[3];                      //holds sprites for each ship type NYI
+    [SerializeField] private GameController gameController; 
     [SerializeField] private GameObject missilePrefab;
     private Animator animator;
     public int shipType;                                                                //NYI
@@ -202,7 +203,9 @@ public class PlayerBehaviour : MonoBehaviour {
     //check for each player movement, using velocity vector * time to increase position vector
     void HandlePlayerMovement() {
 
-        
+        if (gameController.isPaused) {
+            return;
+        }
         if (Input.GetKey(KeyCode.A) && sr.bounds.min.x >= -maxX) {
             transform.position += movementSpeed * Time.deltaTime * Vector3.left;
         }
@@ -229,8 +232,8 @@ public class PlayerBehaviour : MonoBehaviour {
     void FireMissile() {
         numMissiles--;
         GameObject missile = Instantiate(missilePrefab, transform.position, Quaternion.identity);
-        missile.GetComponent<MissileBehaviour>().Fire(
-                Camera.main.ScreenToWorldPoint(Input.mousePosition), true);
+        Vector3 clickLoc = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        missile.GetComponent<MissileBehaviour>().Fire(clickLoc, true, clickLoc.y < transform.position.y);
     }
     void HandleRoll() {
         rollCounter += Time.deltaTime;

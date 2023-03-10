@@ -7,8 +7,9 @@ public class MissileBehaviour : BulletBehaviour {
     private Vector3 targetVec;
     private const float HITBOX_RAD = .5f, HITBOX_OFFSET = -.35f;
     private const float EXPLOSION_RADIUS = 2f;
-    private const float MOUSE_HITBOX_RAD = .2f;
+    private const float MOUSE_HITBOX_RAD = .25f;
     [SerializeField] private SpriteRenderer firePlume;
+    [SerializeField] private GameObject firePlumeO;
     private Color color;
     private float elapsedTime = 0;
     public float maxSpeed;
@@ -20,25 +21,27 @@ public class MissileBehaviour : BulletBehaviour {
     private float timer = 0f;
     private Vector3 travelVector;
     private const int EXPLOSION_DAMAGE = 2;
-    
-    void Start() {
+    private bool backwards;
+    private void Awake() {
         animator = GetComponent<Animator>();
         damage = 50;
         speed = 0;
         hitboxRadius = HITBOX_RAD;
     }
     public void Explode() {
-        Debug.Log("boom");
+        Destroy(gameObject);
+    }
+    public void DamageNearbyEnemies() {
         foreach (GameObject enemy in enemyList) {
             EnemyBehaviour enemyScript = enemy.GetComponent<EnemyBehaviour>();
             if (enemyScript.CheckCollision(EXPLOSION_RADIUS, transform.position)) {
                 enemyScript.health -= EXPLOSION_DAMAGE;
             }
         }
-        Destroy(gameObject);
     }
     // Update is called once per frame
     void Update() {
+        Debug.Log(firePlumeO.transform.position.ToString());
         if (destroy) {
             animator.SetTrigger("boom");
         }
@@ -54,19 +57,11 @@ public class MissileBehaviour : BulletBehaviour {
             travelVector = speed * Time.deltaTime * (targetVec - transform.position).normalized;
             transform.position += travelVector;
             targetVec += travelVector;
-            /*
 
-
-            need to fix firing missile behind you
-            need to fix firing missiles when clicking on menus
-
-
-
-            */
             if (timer >= UPDATE_TIMER) {
 
                 angle = Mathf.Atan((transform.position.x - previousPos.x) /
-                    (transform.position.y - previousPos.y)) * -Mathf.Rad2Deg;
+                    (transform.position.y - previousPos.y)) * -Mathf.Rad2Deg + (backwards ? 180 : 0);
 
                 hitBoxCenter = new Vector3(transform.position.x + Mathf.Sin(angle * Mathf.Deg2Rad) * -HITBOX_OFFSET,
                     transform.position.y + Mathf.Cos(angle * Mathf.Deg2Rad) * HITBOX_OFFSET,
@@ -82,13 +77,15 @@ public class MissileBehaviour : BulletBehaviour {
             color = firePlume.color;
             color.a = color.a == 0 ? 255 : 0;
             firePlume.color = color;
+           
             CheckCollisions();
+
             previousPos = transform.position;
         }
     }
-    
-    
-    public void Fire(Vector3 target, bool friendly) {
+
+
+    public void Fire(Vector3 target, bool friendly, bool backwards) {
         enemyList = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().enemies;
         this.friendly = friendly;
         hitBoxCenter = transform.position - new Vector3(0f, HITBOX_OFFSET, 0f);
@@ -99,7 +96,9 @@ public class MissileBehaviour : BulletBehaviour {
             }
         }
         previousPos = transform.position;
-        targetVec = new Vector3(target.x * 50, target.y * 50, 0f);
+        targetVec = new Vector3(target.x, target.y, 0f);
+        this.backwards = backwards;
+        transform.GetChild(0).transform.position = transform.position + new Vector3(0, -1.255f, 0); // for some reason my fire plume was spawning at z = -22 for some reason so work around
 
     }
 }

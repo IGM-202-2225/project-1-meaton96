@@ -226,6 +226,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 6941f2b243d864b458d4a530802c360a, type: 3}
   - {fileID: 21300000, guid: 8b8d9f3f9e22c31419700ec5c2c1244e, type: 3}
   - {fileID: 21300000, guid: b9e52ad483ff4e944b1fa0804aaffed4, type: 3}
+  gameController: {fileID: 826599070}
   missilePrefab: {fileID: 227896501394212995, guid: cd4a8fc6385a80548aef973541db102e, type: 3}
   shipType: 0
   bulletSpawnOffset: 0
@@ -268,6 +269,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &80495688
 GameObject:
   m_ObjectHideFlags: 0
@@ -1877,6 +1879,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -2755,6 +2758,7 @@ MonoBehaviour:
   infoCanvas: {fileID: 1546072999}
   player: {fileID: 50402440}
   levelNumber: 0
+  isPaused: 0
 --- !u!4 &826599071
 Transform:
   m_ObjectHideFlags: 0

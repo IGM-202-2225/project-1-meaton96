@@ -18,7 +18,7 @@ public class GameController : MonoBehaviour {
     private PlayerBehaviour playerScript;                           //pointer to player script
                                                                     // private int enemyType = 0;                                      
     public int levelNumber;                                        //stores which number level player is on
-    private bool paused = false;                                     //bool if game is paused or not
+    public bool isPaused = false;                                     //bool if game is paused or not
     private const float ROW_SEP_Y = 2;
     private const float ENEMY_SCALE = .8f;
     private const float ENEMY_BASE_SPEED = 4;
@@ -97,7 +97,7 @@ public class GameController : MonoBehaviour {
                 infoCanvas.GetComponent<InfoMenuBehaviour>().Back();
             }
             else {
-                if (paused) {
+                if (isPaused) {
                     Resume();
                 }
                 else {
@@ -132,14 +132,14 @@ public class GameController : MonoBehaviour {
 
     public void Pause() {
         pauseCanvas.SetActive(true);
-        paused = true;
+        isPaused = true;
         Time.timeScale = 0f;
     }
     public void Resume() {
 
         Time.timeScale = 1f;
         pauseCanvas.SetActive(false);
-        paused = false;
+        isPaused = false;
 
     }
 
