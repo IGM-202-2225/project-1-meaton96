@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class PlayerBehaviour : MonoBehaviour {
     private float movementSpeed;                                                        //how fast the player can fly around
@@ -229,10 +230,21 @@ public class PlayerBehaviour : MonoBehaviour {
             }
         }
     }
+    //fires a missile 
     void FireMissile() {
         numMissiles--;
+        //create the missile
         GameObject missile = Instantiate(missilePrefab, transform.position, Quaternion.identity);
+        //get the location the player clicked to fire at
         Vector3 clickLoc = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //iterate enemy list to see if player clikced on an enemy
+        //call one of the 2 fire methods either with the enemy or with the click location
+        foreach (GameObject enemy in gameController.enemies) {
+            if (enemy.GetComponent<EnemyBehaviour>().CheckCollision(.15f, clickLoc)) {
+                missile.GetComponent<MissileBehaviour>().Fire(enemy, true, clickLoc.y < transform.position.y);
+                return;
+            }
+        }
         missile.GetComponent<MissileBehaviour>().Fire(clickLoc, true, clickLoc.y < transform.position.y);
     }
     void HandleRoll() {
