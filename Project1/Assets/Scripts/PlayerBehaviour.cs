@@ -48,10 +48,14 @@ public class PlayerBehaviour : MonoBehaviour {
     private float rollTimer = .2f;
     private float rollCounter;
     public int numMissiles;
+    public bool wonGame = false;
+
+    private DataTransferBehaviour dtb;
     
 
     // Start is called before the first frame update
     void Start() {
+        dtb = GameObject.FindWithTag("Data").GetComponent<DataTransferBehaviour>();
         numMissiles = 100;
         state = State.Normal;
         //set all variables to their base level
@@ -62,7 +66,7 @@ public class PlayerBehaviour : MonoBehaviour {
         movementSpeed = BASE_SPEED;
         numBulletsFired = 1;
         shipType = 0;   //only working ship type, others will have bad hitboxes
-        lives = 3;
+        lives = 1;
         coins = 5;
         sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
@@ -108,6 +112,7 @@ public class PlayerBehaviour : MonoBehaviour {
             state = State.Respawning;
             StartCoroutine(Respawn());
         }
+        dtb.score = score;
     }
     //take damage by passed in value (reduced by armor)
     public void TakeDamage(float damage, bool isBullet) {
@@ -295,7 +300,7 @@ public class PlayerBehaviour : MonoBehaviour {
     public void DecrementLives() { lives--; }
     public void IncrementLives() { lives++; }
     public void ResetLives() { lives = 3; }
-    public bool OutOfLives() { return lives <= 0; }
+    public bool OutOfLives() { return lives <= 1; }
     public void AddToCoins(int numCoins) {
         coins += numCoins;
     }

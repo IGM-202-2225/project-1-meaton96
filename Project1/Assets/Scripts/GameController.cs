@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
     public List<GameObject> enemies = new();                        //list to store all alive enemies in
@@ -108,8 +108,13 @@ public class GameController : MonoBehaviour {
         //checks for player alive, player spawning, and out of enemies conditions
         if (!playerScript.IsAlive() && !playerScript.isSpawning) {
             if (playerScript.OutOfLives()) {
+                //game over
                 Time.timeScale = 0f;
-                //end game screen
+                player.SetActive(false);
+                
+                SceneManager.LoadScene(2, LoadSceneMode.Single);
+                //SceneManager.MoveGameObjectToScene(player, SceneManager.GetSceneByBuildIndex(2));
+
             }
             //reset player position and start player spawn routine
             player.transform.position = playerSpawn;
@@ -183,7 +188,7 @@ public class GameController : MonoBehaviour {
 
                 }
 
-                //index out of bounds at wave 10
+                //index out of bounds at wave 10 and when ending the game?
                 SpawnEnemy(index, new Vector3(
                     spawnX + y * defaultEnemyXOffset,
                     Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) + row * ROW_SEP_Y + 1, 0),
