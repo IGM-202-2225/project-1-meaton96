@@ -13,6 +13,8 @@ public class GameController : MonoBehaviour {
     [SerializeField] private GameObject shopCanvas;                 //pointer to shop game object
     [SerializeField] private GameObject pauseCanvas;
     [SerializeField] private GameObject infoCanvas;
+    [SerializeField] private UIBehaviour uiScript;
+    [SerializeField] private GameObject bossPreFab;
     private Vector2 playerSpawn;                                    //location to respawn the player
     public GameObject player;                                       //pointer to player
     private PlayerBehaviour playerScript;                           //pointer to player script
@@ -29,13 +31,16 @@ public class GameController : MonoBehaviour {
     private float BOTTOM_OF_SCREEN;
     // Start is called before the first frame update
     void Start() {
+        uiScript = GameObject.FindWithTag("ui").GetComponent<UIBehaviour>();
         BOTTOM_OF_SCREEN = -Camera.main.ScreenToWorldPoint(Vector3.zero).y;
         //initialize shop variables
         shopCanvas.GetComponent<ShopBehaviour>().Init();
         levelNumber = 0;
         playerScript = player.GetComponent<PlayerBehaviour>();
         playerSpawn = new Vector2(0f, -3f);
-        StartNewLevel();
+
+        SpawnBoss();
+        //StartNewLevel();
     }
     //spawns a simple enemy wave with
     //@param enemyType type of enemy
@@ -121,8 +126,14 @@ public class GameController : MonoBehaviour {
             
         }
         if (!enemies.Any()) {
-            StartNewLevel();
+            //StartNewLevel();
+            
         }
+        
+    }
+    public void SpawnBoss() {
+        enemies.Add(Instantiate(bossPreFab, new Vector3(0f, 8.5f, 0f), Quaternion.identity));
+        uiScript.ToggleBossHealthBar();
         
     }
     void CheckForEnemyOffScreen() {

@@ -7,29 +7,30 @@ using UnityEngine.UI;
 
 public class EnemyBehaviour : MonoBehaviour {
 
-    private const float HITBOX_RADIUS = .7f;                     //radius of hitbox
-    private const float DEFAULT_SHOOT_DELAY = 10f;        //default delay between shooting
+    protected const float HITBOX_RADIUS = .7f;                     //radius of hitbox
+    protected const float DEFAULT_SHOOT_DELAY = 10f;        //default delay between shooting
     public float scale = .7f;                             //how big to scale the model and hitbox  
-    private const float VERTICAL_ROW_SEPERATION = 3;      //how far apart the rows are, how many units to move down when doing default movement
-    private const string ANIMATOR_EXPLODE_TRIGGER = "explode";  //trigger tag for starting explode animation
+    protected const float VERTICAL_ROW_SEPERATION = 3;      //how far apart the rows are, how many units to move down when doing default movement
+    protected float vertRowSep;
+    protected const string ANIMATOR_EXPLODE_TRIGGER = "explode";  //trigger tag for starting explode animation
     public bool isAlive;                                    //keeps track if the enemy is alive or not
-    private Animator animator;                              //pointer to animator component
-    private float maxX;                                     //how far left or right the enemy can move doing default movement
-    private bool right;                                  //keeps track if the enemy is moving left or right
-    private float speed;                                 //how fast the enemy is moving
-    private SpriteRenderer sr;                           //pointer to sprite render component
+    protected Animator animator;                              //pointer to animator component
+    protected float maxX;                                     //how far left or right the enemy can move doing default movement
+    protected bool right;                                  //keeps track if the enemy is moving left or right
+    protected float speed;                                 //how fast the enemy is moving
+    protected SpriteRenderer sr;                           //pointer to sprite render component
     public float damageDone;                                //how much damage the enemy does with its shot
     public int health;                                      //how much health the enemy has
-    private float shootTimer = 0f, shootDelay;          //floats to track and delay the time between enemy shots
-    [SerializeField] private GameObject bulletPrefab;   //prefab for the enemy bullet
+    protected float shootTimer = 0f, shootDelay;          //floats to track and delay the time between enemy shots
+    [SerializeField] protected GameObject bulletPrefab;   //prefab for the enemy bullet
     int type;
-    private PlayerBehaviour playerScript;
+    protected PlayerBehaviour playerScript;
     public int numBulletsFired;
     public float bulletSpreadAngle = 10f;
-    private const int BASE_SCORE = 100;
-    private const float BASE_COIN_DROP_CHANCE = .5f;
-    private const float BULLET_LENGTH = .45f;
-    private const float DAMAGE_ON_COLLISION = 10f;
+    protected const int BASE_SCORE = 100;
+    protected const float BASE_COIN_DROP_CHANCE = .5f;
+    protected const float BULLET_LENGTH = .45f;
+    protected const float DAMAGE_ON_COLLISION = 10f;
     public static readonly float[] DAMAGE_DONE_EACH_ENEMY = {
         10f,
         10f,
@@ -57,7 +58,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-
+        
         DefaultLateralMovement();                           //move
         if (health <= 0) {                                  //check for death
             isAlive = false;
@@ -121,7 +122,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
     //default left or right movement for simple enemy waves
     //when enemy hits the edge of the screen it moves down towards the bottom of the screen
-    private void DefaultLateralMovement() {
+    protected virtual void DefaultLateralMovement() {
         transform.position += Time.deltaTime * speed * (right ? Vector3.right : Vector3.left);
         if (sr.bounds.max.x >= maxX || sr.bounds.min.x <= -maxX) {
             float xOffsetOnRowChange = .1f;
@@ -129,14 +130,22 @@ public class EnemyBehaviour : MonoBehaviour {
                 xOffsetOnRowChange = -xOffsetOnRowChange;
             right = !right;
             transform.position = new Vector3(transform.position.x + xOffsetOnRowChange,
-                transform.position.y - VERTICAL_ROW_SEPERATION, 0);
+                transform.position.y - vertRowSep, 0);
         }
         //add in check for hitting bottom of the screen
+    }
+    public void TakeDamage(int dam) {
+        health -= dam;
+        if (health < 0) health = 0;
+        if (health == 0) {
+            isAlive = false;
+        }
     }
 
 
     public void Init(int type, float speed, bool right) {
         //index out of bounds at wave 10 ?
+        vertRowSep = VERTICAL_ROW_SEPERATION;
         this.type = type;
         transform.localScale = new Vector3(scale, scale, scale);                    //shrink or grow enemy
         this.right = right;                                                         //set left or right direction
@@ -166,7 +175,7 @@ public class EnemyBehaviour : MonoBehaviour {
     }
 
     //check for collision with the something located at 'center' vector with hit box circle of radius 'radius'
-    public bool CheckCollision(float radius, Vector3 center) {
+    public virtual bool CheckCollision(float radius, Vector3 center) {
         if (!isAlive)
             return false;
         if (gameObject == null)

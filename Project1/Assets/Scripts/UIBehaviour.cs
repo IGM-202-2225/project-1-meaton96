@@ -15,13 +15,16 @@ public class UIBehaviour : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI levelNumText;
     [SerializeField] private TextMeshProUGUI missileText;
     [SerializeField] private GameController gameController;
+    [SerializeField] private GameObject bossHealthBarBg, bossHealthBar;
+    private bool bossWave = false;
     private PlayerBehaviour playerScript;
     private bool infoDisplayed;
+    private BossBehaviour currentBossScript;
     // Start is called before the first frame update
     void Start() {
         infoDisplayed = infoText.IsActive();
         playerScript = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
-        
+
     }
 
     // Update is called once per frame
@@ -33,15 +36,26 @@ public class UIBehaviour : MonoBehaviour {
         }
         scoreText.text = "Score: " + playerScript.score;
         coinText.text = playerScript.coins + "";
-        if (infoDisplayed) 
+        if (infoDisplayed)
             infoText.text = playerScript.GetPlayerStat();
-        
+
         levelNumText.text = "Level\n" + gameController.levelNumber;
         livesText.text = "Lives\n" + playerScript.Lives;
         enemiesRemainingText.text = "Remaining: " + gameController.enemies.Count;
         missileText.text = playerScript.numMissiles + "";
-        
 
+        if (bossWave) {
+            bossHealthBar.transform.localScale = new Vector3(
+                currentBossScript.health * 1.0f / currentBossScript.maxHealth, 1, 1);
+
+        }
+
+    }
+    public void ToggleBossHealthBar() {
+        bossWave = !bossWave;
+        bossHealthBarBg.SetActive(bossWave);
+        enemiesRemainingText.alpha = bossWave ? 0f : 1f;
+        currentBossScript = GameObject.FindWithTag("Boss").GetComponent<BossBehaviour>();
     }
 
     public void ToggleInfo() {

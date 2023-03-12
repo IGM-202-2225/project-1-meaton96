@@ -8,6 +8,8 @@ TagManager:
   - enemy
   - Shop
   - Data
+  - ui
+  - Boss
   layers:
   - Default
   - TransparentFX

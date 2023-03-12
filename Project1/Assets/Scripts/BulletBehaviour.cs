@@ -61,10 +61,8 @@ public class BulletBehaviour : MonoBehaviour {
                 }
                 else
                     numEnemiesPierced--;
-                enemyScript.health -= damage;
-                if (enemyScript.health <= 0) {
-                    enemyScript.isAlive = false;
-                }   
+                enemyScript.TakeDamage(damage);
+                   
 
                 if (!enemyScript.isAlive)
                     enemyList.Remove(enemy);
