@@ -19,7 +19,7 @@ public class MissileBehaviour : BulletBehaviour {
     private Vector3 travelVector;                                                   //the direction the missile is traveling
     private const int EXPLOSION_DAMAGE = 2;                                         //how much damage secondary explosion does
     private bool backwards;                                                         //if the missile was fired backwards, used to flip the rocket sprite 180 degrees
-    private const int DAMAGE_DONE = 5;
+    private const int DAMAGE_DONE = 25;
     public const int COST = 5;
     private void Awake() {
         animator = GetComponent<Animator>();
