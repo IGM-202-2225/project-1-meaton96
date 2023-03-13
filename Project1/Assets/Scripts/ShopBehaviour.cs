@@ -31,10 +31,10 @@ public class ShopBehaviour : MonoBehaviour {
         //distribute new shop items across the screen
         for (int x = 0; x < shopItems.Length; x++) {
             if (x < 3) {
-                pos = new Vector3(SHOP_ITEM_X, SHOP_ITEM_START_Y - SHOP_ITEM_OFFSET_Y * x, 0f);
+                pos = new Vector3(-SHOP_ITEM_X, SHOP_ITEM_START_Y - SHOP_ITEM_OFFSET_Y * x, 0f);
             }
             else {
-                pos = new Vector3(-SHOP_ITEM_X, SHOP_ITEM_START_Y - SHOP_ITEM_OFFSET_Y * (x - 3), 0f);
+                pos = new Vector3(SHOP_ITEM_X, SHOP_ITEM_START_Y - SHOP_ITEM_OFFSET_Y * (x - 3), 0f);
             }
             shopItems[x] = Instantiate(shopItemPrefab, pos, Quaternion.identity);
             shopItems[x].transform.SetParent(transform, false);

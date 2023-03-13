@@ -10,6 +10,7 @@ TagManager:
   - Data
   - ui
   - Boss
+  - rulesCanvas
   layers:
   - Default
   - TransparentFX

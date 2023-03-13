@@ -26,4 +26,7 @@ public class MainMenuBehaviour : MonoBehaviour
     public void DisplayRules() {
         rules.SetActive(true);
     }
+    public void ExitRules() {
+        rules.SetActive(false);
+    }
 }

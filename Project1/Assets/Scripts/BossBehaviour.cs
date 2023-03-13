@@ -15,7 +15,7 @@ public class BossBehaviour : EnemyBehaviour {
     private float timer = 0f;                                                               //timer to blink the size indicator
     private bool inAttackPattern = false;                                                   //flag if the boss is currently doing an attack
     private const int BULLET_DAMAGE = 0;                                                    //how much damage each bullet does
-    private const int MAX_HEALTH = 400;                                                     //max health of the boss
+    private const int MAX_HEALTH = 4000;                                                     //max health of the boss
     private const float SPEED = 4f;                                                         //how fast the boss moves right to left
     private const float SHOOT_DELAY = 0.75f;                                                //how long between shooting waves of bullets
     private const int NUM_BULLETS_FIRED = 20;                                               //number of bullets fired in a wave
