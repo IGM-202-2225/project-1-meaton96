@@ -24,6 +24,8 @@ public class EnemyBehaviour : MonoBehaviour {
     protected float shootTimer = 0f, shootDelay;          //floats to track and delay the time between enemy shots
     [SerializeField] protected GameObject bulletPrefab;   //prefab for the enemy bullet
     int type;
+    private bool killedByPlayer = false;
+    private float bottomOfScreen;
     protected PlayerBehaviour playerScript;
     public int numBulletsFired;
     public float bulletSpreadAngle = 10f;
@@ -31,6 +33,10 @@ public class EnemyBehaviour : MonoBehaviour {
     protected const float BASE_COIN_DROP_CHANCE = .5f;
     protected const float BULLET_LENGTH = .45f;
     protected const float DAMAGE_ON_COLLISION = 10f;
+    public bool movingOnToScreen;
+    public static int ID = 0;
+    public int id;
+    private float leftSide, rightSide;
     public static readonly float[] DAMAGE_DONE_EACH_ENEMY = {
         10f,
         10f,
@@ -54,12 +60,20 @@ public class EnemyBehaviour : MonoBehaviour {
         Color.red,
     };
 
-    
+
 
     // Update is called once per frame
-    void Update() {
-        
+    protected virtual void Update() {
+        if (movingOnToScreen) {
+            if (transform.position.x > leftSide + sr.bounds.extents.x &&
+                transform.position.x < rightSide - sr.bounds.extents.x) {
+                movingOnToScreen = false;
+            }
+        }
         DefaultLateralMovement();                           //move
+        if (transform.position.y <= bottomOfScreen) {
+            health = 0;
+        }
         if (health <= 0) {                                  //check for death
             isAlive = false;
             animator.SetTrigger(ANIMATOR_EXPLODE_TRIGGER);  //start explode animation
@@ -82,10 +96,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
     }
     //spawns a bullet at enemy position
-    void Shoot() {
-        //Vector3 pos = new(transform.position.x, transform.position.y - 1, 0);
-        //GameObject bullet = Instantiate(bulletPrefab, pos, Quaternion.identity);
-        //bullet.GetComponent<EnemyBulletBehaviour>().Init(damage);
+    protected void Shoot() {
         float angle;
         for (int x = 0; x < numBulletsFired; x++) {
             if (numBulletsFired % 2 != 0) {
@@ -124,7 +135,7 @@ public class EnemyBehaviour : MonoBehaviour {
     //when enemy hits the edge of the screen it moves down towards the bottom of the screen
     protected virtual void DefaultLateralMovement() {
         transform.position += Time.deltaTime * speed * (right ? Vector3.right : Vector3.left);
-        if (sr.bounds.max.x >= maxX || sr.bounds.min.x <= -maxX) {
+        if (!movingOnToScreen && (sr.bounds.max.x >= maxX || sr.bounds.min.x <= -maxX)) {
             float xOffsetOnRowChange = .1f;
             if (right)
                 xOffsetOnRowChange = -xOffsetOnRowChange;
@@ -138,13 +149,24 @@ public class EnemyBehaviour : MonoBehaviour {
         health -= dam;
         if (health < 0) health = 0;
         if (health == 0) {
+            killedByPlayer = true;
             isAlive = false;
+        }
+        else {
+            ChangeSpriteAlpha(.5f);
+            StartCoroutine(FlashOnDamageTake());
         }
     }
 
+    private void ChangeSpriteAlpha(float alpha) {
+        Color c = GetComponent<SpriteRenderer>().color;
+        c.a = alpha;
+        GetComponent<SpriteRenderer>().color = c;
+    }
 
     public void Init(int type, float speed, bool right) {
-        //index out of bounds at wave 10 ?
+        movingOnToScreen = true;
+        id = ID++;
         vertRowSep = VERTICAL_ROW_SEPERATION;
         this.type = type;
         transform.localScale = new Vector3(scale, scale, scale);                    //shrink or grow enemy
@@ -156,12 +178,20 @@ public class EnemyBehaviour : MonoBehaviour {
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         animator.SetTrigger("ship" + type);     //change the ship model by setting animation trigger
         this.speed = speed;
-        shootDelay = Random.Range(DEFAULT_SHOOT_DELAY / 2.0f, DEFAULT_SHOOT_DELAY); /// (type + 1); enemies scale harder
+        shootDelay = Random.Range(DEFAULT_SHOOT_DELAY / 2.0f, DEFAULT_SHOOT_DELAY) / (type + 1); //enemies scale harder
         playerScript = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
         numBulletsFired = NUM_BULLETS_EACH_ENEMY[type];
         damageDone = DAMAGE_DONE_EACH_ENEMY[type];
         sr.color = COLOR_EACH_ENEMY[type];
+        bottomOfScreen = Camera.main.ScreenToWorldPoint(Vector3.zero).y + 4;
+        leftSide = Camera.main.ScreenToWorldPoint(Vector3.zero).y;
+        rightSide = -leftSide;
+        movingOnToScreen = true;
 
+    }
+    IEnumerator FlashOnDamageTake() {
+        yield return new WaitForSeconds(.75f);
+        ChangeSpriteAlpha(1f);
     }
     public void SetBulletsFired(int num) {
         numBulletsFired = num;
@@ -195,17 +225,20 @@ public class EnemyBehaviour : MonoBehaviour {
 
     //called by keyframe event in the animation
     public void FinishExplode() {
-        PlayerBehaviour playerScript = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
-        playerScript.AddToScore(BASE_SCORE * (type + 1));
-        float coinsDropped = BASE_COIN_DROP_CHANCE * type;
-        int numCoinsDropped = 0;
-        if (coinsDropped != (int)coinsDropped && Random.Range(0, 1) <= BASE_COIN_DROP_CHANCE)
-            numCoinsDropped++;
+        if (killedByPlayer) {
+            PlayerBehaviour playerScript = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
+            playerScript.AddToScore(BASE_SCORE * (type + 1));
+            float coinsDropped = BASE_COIN_DROP_CHANCE * type;
+            int numCoinsDropped = 0;
+            if (coinsDropped != (int)coinsDropped && Random.Range(0, 1) <= BASE_COIN_DROP_CHANCE)
+                numCoinsDropped++;
 
-        numCoinsDropped += (int)coinsDropped;
-        playerScript.AddToCoins(numCoinsDropped);
+            numCoinsDropped += (int)coinsDropped;
+            playerScript.AddToCoins(numCoinsDropped);
+        }
         Destroy(gameObject);
     }
+    
 
 }
 

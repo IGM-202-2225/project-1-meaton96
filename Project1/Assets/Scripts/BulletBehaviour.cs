@@ -12,16 +12,18 @@ public class BulletBehaviour : MonoBehaviour {
     protected Vector3 hitBoxCenter;
     protected bool destroy = false;
     protected Animator animator;
-
+    protected bool didDamage;
     public int numEnemiesPierced;
     //private bool firedByPlayer;
     float maxY;
     public int damage;
-    // Start is called before the first frame update
-    void Start() {
+    public GameObject lastEnemyHit;
+
+    private void Awake() {
         hitboxRadius = HIT_BOX_RADIUS;
         maxY = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) + 5;
         enemyList = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().enemies;
+        
     }
 
     // Update is called once per frame
@@ -52,7 +54,13 @@ public class BulletBehaviour : MonoBehaviour {
         
 
         foreach (GameObject enemy in enemyList) {
+
             EnemyBehaviour enemyScript = enemy.GetComponent<EnemyBehaviour>();
+            if (lastEnemyHit != null) {
+                if (enemyScript.id == lastEnemyHit.GetComponent<EnemyBehaviour>().id) {
+                    continue;
+                }
+            }
             hitBoxCenter = new(transform.position.x, transform.position.y + HIT_BOX_OFFSET_Y, 0);
             if (enemyScript.CheckCollision(hitboxRadius, hitBoxCenter)) {
                 if (numEnemiesPierced <= 0) {
@@ -61,11 +69,10 @@ public class BulletBehaviour : MonoBehaviour {
                 }
                 else
                     numEnemiesPierced--;
-                enemyScript.TakeDamage(damage);
-                   
 
-                if (!enemyScript.isAlive)
-                    enemyList.Remove(enemy);
+                enemyScript.TakeDamage(damage);
+                lastEnemyHit = enemy;
+                
                 break;
             }
         }

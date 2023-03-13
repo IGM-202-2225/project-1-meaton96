@@ -15,19 +15,17 @@ public class ShopBehaviour : MonoBehaviour {
     private float SHOP_ITEM_X = 0;
     private float SHOP_ITEM_START_Y = 95, SHOP_ITEM_OFFSET_Y = 120;
 
-    public float div_one, div_two;
+    public float div_one = .035f;
     
     //initialize shop items
     public void Init() {
-        div_one = div_two = .035f;
         shopItems = new GameObject[6];
-        //SHOP_ITEM_X = Screen.width / 2.0f;
-        //SHOP_ITEM_START_Y = Screen.height / 1.5f;
-        //SHOP_ITEM_OFFSET_Y = Screen.height / 1.2f;
-        SHOP_ITEM_X = Camera.main.ScreenToWorldPoint(Vector3.zero).x / .04f;
-        float height = Camera.main.ScreenToWorldPoint(Vector3.zero).y;
-        SHOP_ITEM_START_Y = height / div_one;
-        SHOP_ITEM_OFFSET_Y = height / div_two;
+        Vector3 dimensions = Camera.main.WorldToScreenPoint(Vector3.zero);
+        SHOP_ITEM_X = dimensions.x / 1.5f;
+
+
+        SHOP_ITEM_START_Y = dimensions.y - 100;
+        SHOP_ITEM_OFFSET_Y = 300f;
 
 
         //working on arranging shop items
@@ -36,10 +34,10 @@ public class ShopBehaviour : MonoBehaviour {
         //distribute new shop items across the screen
         for (int x = 0; x < shopItems.Length; x++) {
             if (x < 3) {
-                pos = new Vector3(-SHOP_ITEM_X, SHOP_ITEM_START_Y - SHOP_ITEM_OFFSET_Y * x, 0f);
+                pos = new Vector3(SHOP_ITEM_X, SHOP_ITEM_START_Y - SHOP_ITEM_OFFSET_Y * x, 0f);
             }
             else {
-                pos = new Vector3(SHOP_ITEM_X, SHOP_ITEM_START_Y - SHOP_ITEM_OFFSET_Y * (x - 3), 0f);
+                pos = new Vector3(-SHOP_ITEM_X, SHOP_ITEM_START_Y - SHOP_ITEM_OFFSET_Y * (x - 3), 0f);
             }
             shopItems[x] = Instantiate(shopItemPrefab, pos, Quaternion.identity);
             shopItems[x].transform.SetParent(transform, false);
@@ -93,5 +91,11 @@ public class ShopBehaviour : MonoBehaviour {
         }
         playerScript.coins -= shoppingCartAmount;
         OnShopShow();
+    }
+    public void PurchaseMissile() {
+        if (playerScript.coins >= MissileBehaviour.COST) {
+            playerScript.coins -= MissileBehaviour.COST;
+            playerScript.numMissiles++;
+        }
     }
 }

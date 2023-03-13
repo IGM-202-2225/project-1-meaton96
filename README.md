@@ -18,7 +18,7 @@
 
 ### Game Description
 
-_A brief explanation of your game. Inculde what is the objective for the player. Think about what would go on the back of a game box._
+Fight your way through hoards of enemy ships that are attacking your home world. Can you fight all the way to the mothership? 
 
 ### Controls
 
@@ -33,8 +33,13 @@ _A brief explanation of your game. Inculde what is the objective for the player.
 
 Documentation:
 Player movement: as above, when coming into contact with edges of the screen player movement is halted
-Player has a healthbar and lives, when your health runs out you will respawn at the bottom center of the screen and will be immune for 3 seconds,
+
+Player has a healthbar and lives, when your health runs out you will respawn at the bottom center of the screen and will be immune for 3 seconds
+
 Player shooting delay: there is a time delay between allowing the player to shoot, starting at .2 seconds, this is done with a simple timer float by increasing it by Time.deltaTime
+
+reaching level 10 will spawn a boss. Defeating the boss will end the game, A player running out of lives will end the game.
+
 
 Enemy types:
 currently 5 simple enemy types, each type has increasing amount of health, damage, and bullet amounts
@@ -48,8 +53,7 @@ currently 5 simple enemy types, each type has increasing amount of health, damag
 
 ## Known Issues
 
-Game crashes at wave 10
-Died and lives dropped to -900, next wave didnt spawn?
+low level enemies that take a large amount of damage from a bullet are sometimes not removed from the scene. The enemy is dead and collisions stop but the sprite is still rendered
 
 ### Requirements not completed
 

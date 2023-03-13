@@ -56,7 +56,7 @@ public class PlayerBehaviour : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         dtb = GameObject.FindWithTag("Data").GetComponent<DataTransferBehaviour>();
-        numMissiles = 100;
+        numMissiles = 0;
         state = State.Normal;
         //set all variables to their base level
         upgradeLevels = new int[6];
@@ -66,7 +66,7 @@ public class PlayerBehaviour : MonoBehaviour {
         movementSpeed = BASE_SPEED;
         numBulletsFired = 1;
         shipType = 0;   //only working ship type, others will have bad hitboxes
-        lives = 1;
+        lives = 3;
         coins = 5;
         sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
@@ -115,8 +115,8 @@ public class PlayerBehaviour : MonoBehaviour {
         dtb.score = score;
     }
     //take damage by passed in value (reduced by armor)
-    public void TakeDamage(float damage, bool isBullet) {
-        currentHealth -= damage - (isBullet ? armor * ARMOR_STRENGTH : 0);
+    public void TakeDamage(float damage, bool pierceArmor) {
+        currentHealth -= damage - (!pierceArmor ? armor * ARMOR_STRENGTH : 0);
         if (currentHealth < 0) {
             currentHealth = 0;
         }

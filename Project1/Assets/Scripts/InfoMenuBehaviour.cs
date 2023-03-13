@@ -35,19 +35,41 @@ public class InfoMenuBehaviour : MonoBehaviour {
     }
     //called to swap the page
     public void ChangePage() {
+        foreach (var image in images) {
+            if (image.color.a == 0f) {
+                Color c = image.color;
+                c.a = 1f;
+                image.color = c;
+            }
+        }
         switch (pageNumber) {
             case 0:
-                DisplayEnemyInfo(0, 1, 2);
+                DisplayControls();
                 break;
             case 1:
-                DisplayEnemyInfo(3, 4);
+                DisplayEnemyInfo(0, 1, 2);
                 break;
             case 2:
+                DisplayEnemyInfo(3, 4);
+                break;
+            case 3:
                 DisplayBulletInfo(0, 1, 2);
                 break;
-            case 3: 
+            case 4: 
                 DisplayBulletInfo(3, 4);
                 break;
+           
+
+        }
+    }
+    public void DisplayControls() {
+        titleText.text = "Controls";
+
+        infoText.text = "WASD to move\nSpace to fire\nClick to fire missile (if you have some available)\nMissiles do 5 damage\n";
+        foreach (var image in images) {
+            Color c = image.color;
+            c.a = 0f;
+            image.color = c;
         }
     }
     //add up to 3 enemy info sections and add corresponding images

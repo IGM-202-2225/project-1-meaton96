@@ -463,14 +463,16 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Movement: W A S D
 
-    Fire: Space
+    Fire: Space Fire Missile: Left Click
 
-    Pause/Shop: Escape
+    Pause/Shop:
+    Escape
 
+    Fight waves of enemies to increase score and gain coins. Spend coins
+    on upgrades in the shop window.
 
-    Fight
-    waves of enemies to increase score and gain coins. Spend coins on upgrades, between
-    rounds, in the shop window'
+    Reach Wave 10 to fight the boss and end
+    the game'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bf8ad74d807aeea499dce88188474761, type: 2}
   m_sharedMaterial: {fileID: 3372557436685940883, guid: bf8ad74d807aeea499dce88188474761, type: 2}
@@ -497,8 +499,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
