@@ -1,9 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class PlayerBehaviour : MonoBehaviour {
     private float movementSpeed;                                                        //how fast the player can fly around
