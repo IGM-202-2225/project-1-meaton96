@@ -5,7 +5,7 @@ public class PlayerBehaviour : MonoBehaviour {
     private float movementSpeed;                                                        //how fast the player can fly around
     [SerializeField] private GameObject bulletPrefab;                                   //pointer to bullet pre fab 
     [SerializeField] private Sprite[] shipSprites = new Sprite[3];                      //holds sprites for each ship type NYI
-    [SerializeField] private GameController gameController; 
+    [SerializeField] private GameController gameController;
     [SerializeField] private GameObject missilePrefab;
     private Animator animator;
     public int shipType;                                                                //NYI
@@ -35,7 +35,7 @@ public class PlayerBehaviour : MonoBehaviour {
     private const float SPEED_PER_UPGRADE = .5f;                                        //how much faster player gets per upgrade level
     private const float ATTACK_SPEED_PER_UPGRADE = -0.05f;                               //how much less time needs to pass before player can shoot again
     private const float BASE_ATTACK_DELAY = .5f;                                        //base time in seconds between player attacks
-    private const float ARMOR_STRENGTH = 1.5f;                                           //how much damage each point of armor reduces
+    private const float ARMOR_STRENGTH = .1f;                                           //how much damage each point of armor reduces
     public int[] upgradeLevels;                                                         //stores how many of each upgrade type player has purchased
     public float AttackSpeed { get { return ((int)(10 / attackDelay)) / 10f; } }       //float for displaying player attack speed on interface
 
@@ -47,7 +47,7 @@ public class PlayerBehaviour : MonoBehaviour {
     public bool wonGame = false;
 
     private DataTransferBehaviour dtb;
-    
+
 
     // Start is called before the first frame update
     void Start() {
@@ -111,7 +111,10 @@ public class PlayerBehaviour : MonoBehaviour {
     }
     //take damage by passed in value (reduced by armor)
     public void TakeDamage(float damage, bool pierceArmor) {
-        currentHealth -= damage - (!pierceArmor ? armor * ARMOR_STRENGTH : 0);
+        float damageMit = pierceArmor ? 0 : armor * ARMOR_STRENGTH * damage;
+
+        currentHealth -= damage - damageMit;
+        Debug.Log(damage + ", " + damageMit);
         if (currentHealth < 0) {
             currentHealth = 0;
         }

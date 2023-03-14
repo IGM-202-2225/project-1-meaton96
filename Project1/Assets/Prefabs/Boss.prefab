@@ -126,5 +126,8 @@ MonoBehaviour:
   bulletPrefab: {fileID: 2218975693531696653, guid: d461f525aa2522d4c9f9145835f2cd0d, type: 3}
   numBulletsFired: 0
   bulletSpreadAngle: 10
+  movingOnToScreen: 0
+  id: 0
   maxHealth: 0
   bombPrefab: {fileID: 2083733993834850094, guid: 9037fc12034dc3441bbfd827f735bc26, type: 3}
+  bossBulletSprite: {fileID: 21300000, guid: 58c9783fef8229040a9f324e305bb346, type: 3}

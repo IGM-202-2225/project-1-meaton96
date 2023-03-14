@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour {
     private const float ROW_SEP_Y = 2f;
     private const float ENEMY_SCALE = .8f;
     private const float ENEMY_BASE_SPEED = 4f;
-    private const int NUM_ENEMIES_PER_ROW = 12;
+
     private float enemySpawnY;
     private float enemySpawnX;
     private readonly List<float> ENEMY_SPAWN_WEIGHTS = new(new float[] { .8f, .2f, 0f, 0f, 0f });                             //used to seed enemy spawns, every wave these are added together and used to 
@@ -33,7 +33,10 @@ public class GameController : MonoBehaviour {
     private GameObject boss;
     public bool bossDied = false;
     private DataTransferBehaviour dataTransfer;
-    private bool inTutorial = false;
+    private readonly float pauseDelay = .7f;
+    private float pauseTimer = 0f;
+
+    //  private bool inTutorial = false;
 
     // Start is called before the first frame update
     void Start() {
@@ -49,7 +52,7 @@ public class GameController : MonoBehaviour {
         dataTransfer = GameObject.FindWithTag("Data").GetComponent<DataTransferBehaviour>();
         defaultEnemyXOffset = 1f;
 
-        
+
 
         Tutorial();
 
@@ -58,7 +61,7 @@ public class GameController : MonoBehaviour {
 
     }
     public void Tutorial() {
-        inTutorial = true;
+        // inTutorial = true;
 
 
         StartNewLevel();
@@ -81,29 +84,41 @@ public class GameController : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
-
-        foreach (GameObject enemy in enemies) {
-            if (!enemy.GetComponent<EnemyBehaviour>().isAlive) {
-                enemies.Remove(enemy);
-                break;
+        if (enemies.Any()) {
+            pauseTimer = 0;
+            foreach (GameObject enemy in enemies) {
+                if (!enemy.GetComponent<EnemyBehaviour>().isAlive) {
+                    enemies.Remove(enemy);
+                    break;
+                }
             }
-        }
-        //checks for player pause by pressing escape key
-        if (Input.GetKeyDown(KeyCode.Escape)) {
-            if (shopCanvas.activeInHierarchy) {
-                shopCanvas.GetComponent<ShopBehaviour>().Exit();
-            }
-            else if (infoCanvas.activeInHierarchy) {
-                infoCanvas.GetComponent<InfoMenuBehaviour>().Back();
-            }
-            else {
-                if (isPaused) {
-                    Resume();
+            //checks for player pause by pressing escape key
+            if (Input.GetKeyDown(KeyCode.Escape)) {
+                if (shopCanvas.activeInHierarchy) {
+                    shopCanvas.GetComponent<ShopBehaviour>().Exit();
+                }
+                else if (infoCanvas.activeInHierarchy) {
+                    infoCanvas.GetComponent<InfoMenuBehaviour>().Back();
                 }
                 else {
-                    Pause();
+                    if (isPaused) {
+                        Resume();
+                    }
+                    else {
+                        Pause();
+                    }
                 }
             }
+        }
+        else {
+            if (pauseTimer < pauseDelay) {
+                pauseTimer += Time.deltaTime;
+            }
+            else {
+                uiScript.PauseBetweenRounds();
+                StartNewLevel();
+            }
+
         }
         //checks for player alive, player spawning, and out of enemies conditions
         if (!playerScript.IsAlive() && !playerScript.isSpawning) {
@@ -124,30 +139,19 @@ public class GameController : MonoBehaviour {
             dataTransfer.wonGame = true;
             SceneManager.LoadScene(2, LoadSceneMode.Single);
         }
-        if (!enemies.Any()) {
-            StartNewLevel();
-
-        }
-
-
-
 
     }
+
+
     //spawn the boss and toggle boss health bar on UI
     public void SpawnBoss() {
+
         boss = Instantiate(bossPreFab, new Vector3(0f, 8.5f, 0f), Quaternion.identity);
+        if (levelNumber == 20)
+            boss.GetComponent<BossBehaviour>().Uber();
         enemies.Add(boss);
         uiScript.ToggleBossHealthBar();
 
-    }
-    void CheckForEnemyOffScreen() {
-        Debug.Log(BOTTOM_OF_SCREEN);
-        enemies.ForEach(enemy => {
-            if (enemy.transform.position.y < BOTTOM_OF_SCREEN) {
-                enemies.Remove(enemy);
-                return;
-            }
-        });
     }
 
     public void Pause() {
@@ -167,12 +171,13 @@ public class GameController : MonoBehaviour {
     //starts a new level
     //exits the shop, resets timescale, increases level number
     public void StartNewLevel() {
+
         if (dataTransfer.easyMode)
             playerScript.coins += 100;
         playerScript.coins += levelNumber;
         levelNumber++;
 
-        if (levelNumber == 10) {
+        if (levelNumber % 10 == 0) {
             SpawnBoss();
         }
         else {
@@ -208,7 +213,6 @@ public class GameController : MonoBehaviour {
 
 
             }
-            Debug.Log(index);
 
             Vector3 spawnPos;
             if (x % 2 == 0) {
