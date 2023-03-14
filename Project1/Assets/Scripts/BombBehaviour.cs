@@ -38,7 +38,7 @@ public class BombBehaviour : MonoBehaviour {
         movingToLocation = true;
         targetPos = target;
         distanceToMove = Mathf.Sqrt(Mathf.Pow(target.x - transform.position.x, 2) + Mathf.Pow(target.y - transform.position.y, 2));
-        Debug.Log(distanceToMove);
+       
         startPos = transform.position;
         movingTimer = 0f;
         //BlinkIndicator();

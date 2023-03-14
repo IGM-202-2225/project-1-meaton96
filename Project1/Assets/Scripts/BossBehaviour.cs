@@ -14,8 +14,8 @@ public class BossBehaviour : EnemyBehaviour {
     private const float BULLET_HELL_ATTACK_DELAY = 2f;                                      //how long to wait to attack again after shooting bullets
     private float timer = 0f;                                                               //timer to blink the size indicator
     private bool inAttackPattern = false;                                                   //flag if the boss is currently doing an attack
-    private const int BULLET_DAMAGE = 0;                                                    //how much damage each bullet does
-    private const int MAX_HEALTH = 4000;                                                     //max health of the boss
+    private const int BULLET_DAMAGE = 100;                                                    //how much damage each bullet does
+    private const int MAX_HEALTH = 5000;                                                     //max health of the boss
     private const float SPEED = 4f;                                                         //how fast the boss moves right to left
     private const float SHOOT_DELAY = 0.75f;                                                //how long between shooting waves of bullets
     private const int NUM_BULLETS_FIRED = 20;                                               //number of bullets fired in a wave
@@ -26,8 +26,10 @@ public class BossBehaviour : EnemyBehaviour {
     private const float START_Y = -6;
     private const float BOMB_SPREAD_X = 7f;
     private const float BOMB_SPREAD_Y = 8f;
+    private bool uber = false;
     private List<BombBehaviour> activeBombs;                                                //list of all bombs on the screen
     [SerializeField] private GameObject bombPrefab;                                         //bomb pre fab pointer
+    [SerializeField] private Sprite bossBulletSprite;
     protected override void Update() {
         DefaultLateralMovement();                           //move
         if (health <= 0) {                                  //check for death
@@ -38,7 +40,6 @@ public class BossBehaviour : EnemyBehaviour {
             if (playerScript.CheckCollision(gameObject, HITBOX_RADIUS, 0f, 0f)) {
                 isAlive = false;
                 animator.SetTrigger(ANIMATOR_EXPLODE_TRIGGER);
-                playerScript.TakeDamage(DAMAGE_ON_COLLISION, false);
             }
         }
         //pick one of the two attack patterns at random and execute it, then wait a time before doing it again
@@ -56,6 +57,13 @@ public class BossBehaviour : EnemyBehaviour {
             timer += Time.deltaTime;
         }
 
+    }
+    public void Uber() {
+        uber = true;
+        shootDelay = .1f;
+        speed = 10f;
+        numBulletsFired = 100;
+        health = MAX_HEALTH * 2;
     }
     //shoots waves of bullets
     private IEnumerator BulletHell() {
@@ -99,6 +107,8 @@ public class BossBehaviour : EnemyBehaviour {
 
     //init required values
     private void Awake() {
+        bulletPrefab.GetComponent<SpriteRenderer>().sprite = bossBulletSprite;
+        bulletPrefab.GetComponent<SpriteRenderer>().color = Color.red;
         activeBombs = new();
         vertRowSep = 0;
         right = true;                                                         //set left or right direction
@@ -106,6 +116,7 @@ public class BossBehaviour : EnemyBehaviour {
         animator = GetComponent<Animator>();
         isAlive = true;
         sr = GetComponent<SpriteRenderer>();
+        
         maxX = Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).x);
         speed = SPEED;
         shootDelay = SHOOT_DELAY;
@@ -135,7 +146,9 @@ public class BossBehaviour : EnemyBehaviour {
                           v3.x * (v1.y - v2.y)) / 2.0f);
     }
     public override void FinishExplode() {
-        GameObject.FindWithTag("GameController").GetComponent<GameController>().bossDied = true;
+        if (uber)
+            GameObject.FindWithTag("GameController").GetComponent<GameController>().bossDied = true;
+        GameObject.FindWithTag("ui").GetComponent<UIBehaviour>().ToggleBossHealthBar();
         Destroy(gameObject);
 
     }

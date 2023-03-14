@@ -45,6 +45,15 @@ bug fixes - see Known Issues
 improved enemy spawning
 Added easy mode (Gain 100 coins at the start of every level)
 
+v1.0.2
+bug fixes
+
+v1.0.3
+Changed how armor scaled from addative damage reduction to percent damage
+Made armor required to kill the final boss - boss does 100 damage with each bullet
+Changed the boss's bullet sprite to a red missile to indicate the increased danger from its bullets
+Added an additional 10 waves of enemies before spawning a second boss
+Added a pause and confirmation window between levels to give the player a break
 
 Enemy types:
 currently 5 simple enemy types, each type has increasing amount of health, damage, and bullet amounts
@@ -61,7 +70,8 @@ currently 5 simple enemy types, each type has increasing amount of health, damag
 game doesn't actually end when the boss dies (fixed v1.0.1)
 Unable to exit the rules screen that is on the main menu (fixed v1.0.1)
 Hardest enemies were not spawning (fixed v1.0.1)
-Enemies remaining text is not at the to of the screen due to the different aspect ratio in the Unity web player (fixed v1.0.1)
+Bosses bullets do 0 damage!! (fixed v1.0.3)
+Enemies remaining text is not at the to of the screen due to the different aspect ratio in the Unity web player (fixed v1.0.2)
 going into full screen mode on the web build breaks the shop
 
 ### Requirements not completed

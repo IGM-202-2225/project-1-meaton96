@@ -54,7 +54,7 @@ public class EndGameBehaviour : MonoBehaviour
     private void DisplayEndGameMessage() {
         string message = "";
         if (dtb.wonGame) {
-            message += "Congrats on finishing the game you finished with the highest possible score of: " + dtb.score;
+            message += "Congrats on finishing the game you finished with the high score of: " + dtb.score;
         }
         else {
             message += "Sorry you died before completing the game. You still scored " + dtb.score + " points";
