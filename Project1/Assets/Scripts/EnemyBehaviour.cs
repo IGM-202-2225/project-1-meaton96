@@ -221,7 +221,7 @@ public class EnemyBehaviour : MonoBehaviour {
     }
 
     //called by keyframe event in the animation
-    public void FinishExplode() {
+    public virtual void FinishExplode() {
         if (killedByPlayer) {
             PlayerBehaviour playerScript = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
             playerScript.AddToScore(BASE_SCORE * (type + 1));

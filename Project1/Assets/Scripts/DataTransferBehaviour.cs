@@ -6,10 +6,13 @@ public class DataTransferBehaviour : MonoBehaviour
 {
     public int score;
     public bool wonGame;
+    public bool easyMode;
     // Start is called before the first frame update
     void Start()
     {
         DontDestroyOnLoad(this);
     }
+
+    
 
 }

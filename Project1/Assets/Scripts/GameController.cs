@@ -28,8 +28,13 @@ public class GameController : MonoBehaviour {
     private float enemySpawnY;
     private float enemySpawnX;
     private readonly List<float> ENEMY_SPAWN_WEIGHTS = new(new float[] { .8f, .2f, 0f, 0f, 0f });                             //used to seed enemy spawns, every wave these are added together and used to 
-    private readonly List<float> SPAWN_CHANGE_PER_LEVEL = new(new float[] { -.2f, .1f, .06f, .03f, .01f });               //spawn different enemy tpes, so the longer game goes on, the harder enemies spawn more often
+    private readonly List<float> SPAWN_CHANGE_PER_LEVEL = new(new float[] { -.1f, .035f, .025f, .025f, .015f });               //spawn different enemy tpes, so the longer game goes on, the harder enemies spawn more often
     private float BOTTOM_OF_SCREEN;
+    private GameObject boss;
+    public bool bossDied = false;
+    private DataTransferBehaviour dataTransfer;
+    private bool inTutorial = false;
+
     // Start is called before the first frame update
     void Start() {
         uiScript = GameObject.FindWithTag("ui").GetComponent<UIBehaviour>();
@@ -41,12 +46,24 @@ public class GameController : MonoBehaviour {
         playerSpawn = new Vector2(0f, -3f);
         enemySpawnY = BOTTOM_OF_SCREEN - 1;
         enemySpawnX = -Camera.main.ScreenToWorldPoint(Vector3.zero).x + 2;
-        Debug.Log(enemySpawnX);
+        dataTransfer = GameObject.FindWithTag("Data").GetComponent<DataTransferBehaviour>();
         defaultEnemyXOffset = 1f;
-        StartNewLevel();
+
         
+
+        Tutorial();
+
+
+
+
     }
-    
+    public void Tutorial() {
+        inTutorial = true;
+
+
+        StartNewLevel();
+    }
+
 
     /// <summary>
     /// spawns a single enemy
@@ -63,6 +80,8 @@ public class GameController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+
+
         foreach (GameObject enemy in enemies) {
             if (!enemy.GetComponent<EnemyBehaviour>().isAlive) {
                 enemies.Remove(enemy);
@@ -101,15 +120,23 @@ public class GameController : MonoBehaviour {
             player.transform.position = playerSpawn;
 
         }
+        if (bossDied) {
+            dataTransfer.wonGame = true;
+            SceneManager.LoadScene(2, LoadSceneMode.Single);
+        }
         if (!enemies.Any()) {
             StartNewLevel();
 
         }
 
+
+
+
     }
     //spawn the boss and toggle boss health bar on UI
     public void SpawnBoss() {
-        enemies.Add(Instantiate(bossPreFab, new Vector3(0f, 8.5f, 0f), Quaternion.identity));
+        boss = Instantiate(bossPreFab, new Vector3(0f, 8.5f, 0f), Quaternion.identity);
+        enemies.Add(boss);
         uiScript.ToggleBossHealthBar();
 
     }
@@ -140,10 +167,8 @@ public class GameController : MonoBehaviour {
     //starts a new level
     //exits the shop, resets timescale, increases level number
     public void StartNewLevel() {
-        if (levelNumber == 10) {
-            GameObject.FindWithTag("data").GetComponent<DataTransferBehaviour>().wonGame = true;
-            SceneManager.LoadScene(2, LoadSceneMode.Single);
-        }
+        if (dataTransfer.easyMode)
+            playerScript.coins += 100;
         playerScript.coins += levelNumber;
         levelNumber++;
 
@@ -152,70 +177,39 @@ public class GameController : MonoBehaviour {
         }
         else {
             SpawnEnemyWave(5 + levelNumber * 5);
-            //increase the spawn weights on harder enemies, decrease on easier ones
-            for (int x = 0; x < ENEMY_SPAWN_WEIGHTS.Count; x++) {
-                ENEMY_SPAWN_WEIGHTS[x] = ENEMY_SPAWN_WEIGHTS[x] + SPAWN_CHANGE_PER_LEVEL[x];
-            }
+
         }
     }
     public void SpawnEnemyWave(int numEnemies) {
 
-        
+        float[] adjustedSpawnWeights = new float[ENEMY_SPAWN_WEIGHTS.Count];
+        for (int x = 0; x < ENEMY_SPAWN_WEIGHTS.Count; x++) {
+            adjustedSpawnWeights[x] = ENEMY_SPAWN_WEIGHTS[x] + (levelNumber - 1) * SPAWN_CHANGE_PER_LEVEL[x];
+            if (adjustedSpawnWeights[x] > 1)
+                adjustedSpawnWeights[x] = 0;
 
-       /* int row = 0;
-        int count = 0;
-        bool right = true;
-        while (count < numEnemies) {
+        }
 
 
-            for (int y = 0; y < NUM_ENEMIES_PER_ROW && count < numEnemies; y++) {
-                float spawn = Random.Range(0, 1f);
-                
-                int index = 0;
-                float spawnSum = ENEMY_SPAWN_WEIGHTS[0];
-
-                for (int x = 1; x < ENEMY_SPAWN_WEIGHTS.Count; x++) {
-                    if (ENEMY_SPAWN_WEIGHTS[x] >= 1) {
-                        SPAWN_CHANGE_PER_LEVEL[x] = -.1f;
-                    }
-                    if (spawn < spawnSum) {
-                        index = x - 1;
-                        break;
-                    }
-                    else {
-                        spawnSum += ENEMY_SPAWN_WEIGHTS[x];
-                    }
-                }
-
-                SpawnEnemy(index, new Vector3(
-                    spawnX + y * defaultEnemyXOffset,
-                    Mathf.Abs(Camera.main.ScreenToWorldPoint(Vector3.zero).y) + row * ROW_SEP_Y + 1,
-                    0f),
-                    right,
-                    ENEMY_SCALE);
-                count++;
-            }
-            row++;
-            right = !right;
-        }*/
         for (int x = 0; x < numEnemies; x++) {
             float spawn = Random.Range(0, 1f);
 
             int index = 0;
-            float spawnSum = ENEMY_SPAWN_WEIGHTS[0];
+            float spawnSum = adjustedSpawnWeights[0];
 
-            for (int y = 1; y < ENEMY_SPAWN_WEIGHTS.Count; y++) {
-                if (ENEMY_SPAWN_WEIGHTS[y] >= 1) {
-                    SPAWN_CHANGE_PER_LEVEL[y] = -.1f;
-                }
+
+            for (int y = 1; y < adjustedSpawnWeights.Length; y++) {
+
                 if (spawn < spawnSum) {
-                    index = y - 1;
                     break;
                 }
-                else {
-                    spawnSum += ENEMY_SPAWN_WEIGHTS[y];
-                }
+                index = y;
+                spawnSum += adjustedSpawnWeights[y];
+
+
             }
+            Debug.Log(index);
+
             Vector3 spawnPos;
             if (x % 2 == 0) {
                 spawnPos = new Vector3(enemySpawnX + defaultEnemyXOffset * x, enemySpawnY, 0f);
@@ -223,12 +217,12 @@ public class GameController : MonoBehaviour {
             else
                 spawnPos = new Vector3(-enemySpawnX - defaultEnemyXOffset * x - 1, enemySpawnY - ROW_SEP_Y, 0f);
 
-            Debug.Log(spawnPos.ToSafeString());
+
             SpawnEnemy(index, spawnPos,
                     x % 2 != 0,
                     ENEMY_SCALE);
         }
     }
-    
+
 
 }

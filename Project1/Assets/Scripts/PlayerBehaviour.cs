@@ -24,7 +24,7 @@ public class PlayerBehaviour : MonoBehaviour {
     private int lives;                                                                  //player lives
     public int coins;                                                                   //player money
     public bool isSpawning = false;                                                     //if the player is spawning (player is immune)
-    public int numBulletsFired;                                                         //number of bullets fired per shot
+    public int numBulletsFired;                                                        //number of bullets fired per shot
     public float bulletSpreadAngle = 10f;                                               //angle between bullets when firing more than 1
     public int damageDone = 1;                                                          //the damage of each bullet
     public int armor;                                                                   //player armor
@@ -57,10 +57,9 @@ public class PlayerBehaviour : MonoBehaviour {
         //set all variables to their base level
         upgradeLevels = new int[6];
         attackDelay = BASE_ATTACK_DELAY;
-
+        numBulletsFired = 1;
         armor = 0;
         movementSpeed = BASE_SPEED;
-        numBulletsFired = 1;
         shipType = 0;   //only working ship type, others will have bad hitboxes
         lives = 3;
         coins = 5;

@@ -24,6 +24,8 @@ public class UIBehaviour : MonoBehaviour {
     void Start() {
         infoDisplayed = infoText.IsActive();
         playerScript = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
+        enemiesRemainingText.gameObject.transform.position = new Vector3(enemiesRemainingText.gameObject.transform.position.x,
+            Camera.main.WorldToScreenPoint(Vector3.zero).y * 2 -100, 0f); 
 
     }
 

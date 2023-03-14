@@ -40,6 +40,11 @@ Player shooting delay: there is a time delay between allowing the player to shoo
 
 reaching level 10 will spawn a boss. Defeating the boss will end the game, A player running out of lives will end the game.
 
+v1.0.1 additions
+bug fixes - see Known Issues
+improved enemy spawning
+Added easy mode (Gain 100 coins at the start of every level)
+
 
 Enemy types:
 currently 5 simple enemy types, each type has increasing amount of health, damage, and bullet amounts
@@ -53,9 +58,13 @@ currently 5 simple enemy types, each type has increasing amount of health, damag
 
 ## Known Issues
 
-low level enemies that take a large amount of damage from a bullet are sometimes not removed from the scene. The enemy is dead and collisions stop but the sprite is still rendered
+game doesn't actually end when the boss dies (fixed v1.0.1)
+Unable to exit the rules screen that is on the main menu (fixed v1.0.1)
+Hardest enemies were not spawning (fixed v1.0.1)
+Enemies remaining text is not at the to of the screen due to the different aspect ratio in the Unity web player (fixed v1.0.1)
+going into full screen mode on the web build breaks the shop
 
 ### Requirements not completed
 
-_If you did not complete a project requirement, notate that here_
+None
 

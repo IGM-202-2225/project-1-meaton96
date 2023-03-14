@@ -9,14 +9,14 @@ public class BombBehaviour : MonoBehaviour {
     private Animator animator;
     private PlayerBehaviour playerScript;
     private const float TRIGGER_RADIUS = 20f;
-    private const float EXPLOSION_TIMER = 10f;
-    private const float EXPLOSION_TRIGGER_TIMER = 2.5f;
+    private const float EXPLOSION_TIMER = 6f;
+    private const float EXPLOSION_TRIGGER_TIMER = 1.5f;
     private const float EXPLOSION_RADIUS = 4f;
     private bool isExploding = false;
     private float explosionTimer = 0f;
     private bool exploded = false;
     private const float BLINKING_SPEED_TRIGGERED = .1f;
-    private const float DAMAGE_DONE = 20f;
+    private const float DAMAGE_DONE = 50f;
     private bool movingToLocation;
     Vector3 targetPos;
     private float distanceToMove;

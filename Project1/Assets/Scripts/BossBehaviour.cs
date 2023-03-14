@@ -10,7 +10,7 @@ public class BossBehaviour : EnemyBehaviour {
     public float maxHealth;                                                                 //max health of boss
     private const int NUMBER_BULLET_WAVES = 10;                                             //number of times to shoot bullets during bullet hell
     private float attackDelay;                                                              //how long between boss abilities, set using different constants
-    private const float BOMB_ATTACK_DELAY = 15f;                                            //how long to wait to attack after shooting bombs out
+    private const float BOMB_ATTACK_DELAY = 8f;                                            //how long to wait to attack after shooting bombs out
     private const float BULLET_HELL_ATTACK_DELAY = 2f;                                      //how long to wait to attack again after shooting bullets
     private float timer = 0f;                                                               //timer to blink the size indicator
     private bool inAttackPattern = false;                                                   //flag if the boss is currently doing an attack
@@ -21,7 +21,7 @@ public class BossBehaviour : EnemyBehaviour {
     private const int NUM_BULLETS_FIRED = 20;                                               //number of bullets fired in a wave
     private const int NUM_BOMBS_X = 6;                                                      //grid size of bombs placed
     private const int NUM_BOMBS_Y = 3;
-    private const float BOMB_THROW_DELAY = .25f;                                            //how long between waiting to fire bomb columns
+    private const float BOMB_THROW_DELAY = .1f;                                            //how long between waiting to fire bomb columns
     private const float START_X = -18;                                                      //bomb starting locations and spread distance
     private const float START_Y = -6;
     private const float BOMB_SPREAD_X = 7f;
@@ -45,7 +45,7 @@ public class BossBehaviour : EnemyBehaviour {
         if (timer >= attackDelay && !inAttackPattern) {
             
             if (Random.Range(0f, 1f) >= 0.5f) {
-                StartCoroutine(LobBombs());
+                StartCoroutine(BulletHell());
             } 
             else {
                 StartCoroutine(LobBombs());
@@ -125,8 +125,7 @@ public class BossBehaviour : EnemyBehaviour {
         area2 = FindArea(center, B, C);
         area3 = FindArea(A, center, C);
         area4 = FindArea(A, B, center);
-        Debug.Log(area1);
-        Debug.Log(area2 + area3 + area4);
+        
         return area1 == area2 + area3 + area4;
     }
     //returns the area of a triangle made up by the 3 points
@@ -135,7 +134,11 @@ public class BossBehaviour : EnemyBehaviour {
                           v2.x * (v3.y - v1.y) +
                           v3.x * (v1.y - v2.y)) / 2.0f);
     }
+    public override void FinishExplode() {
+        GameObject.FindWithTag("GameController").GetComponent<GameController>().bossDied = true;
+        Destroy(gameObject);
 
+    }
 
 
 
