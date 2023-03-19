@@ -34,12 +34,13 @@ public class EnemyBehaviour : MonoBehaviour {
     public static int ID = 0;
     public int id;
     private float leftSide, rightSide;
+    [SerializeField] private Sprite defaultSprite;
     public static readonly float[] DAMAGE_DONE_EACH_ENEMY = {
         10f,
-        10f,
-        20f,
+        15f,
         25f,
-        35f
+        35f,
+        50f
     };
     public static readonly int[] NUM_BULLETS_EACH_ENEMY = { 1,3,1,4,6 };
     public static readonly Color[] COLOR_EACH_ENEMY = {
@@ -79,7 +80,7 @@ public class EnemyBehaviour : MonoBehaviour {
             if (playerScript.CheckCollision(gameObject, HITBOX_RADIUS, 0f, 0f)) {
                 isAlive= false;
                 animator.SetTrigger(ANIMATOR_EXPLODE_TRIGGER);
-                playerScript.TakeDamage(DAMAGE_ON_COLLISION, false);
+                playerScript.TakeDamage(DAMAGE_ON_COLLISION, true);
             }
         }
 
@@ -93,7 +94,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
     }
     //spawns a bullet at enemy position
-    protected void Shoot() {
+    protected virtual void Shoot() {
         float angle;
         for (int x = 0; x < numBulletsFired; x++) {
             if (numBulletsFired % 2 != 0) {
@@ -162,6 +163,7 @@ public class EnemyBehaviour : MonoBehaviour {
     }
 
     public void Init(int type, float speed, bool right) {
+        
         movingOnToScreen = true;
         id = ID++;
         vertRowSep = VERTICAL_ROW_SEPERATION;
@@ -183,6 +185,7 @@ public class EnemyBehaviour : MonoBehaviour {
         bottomOfScreen = Camera.main.ScreenToWorldPoint(Vector3.zero).y + 4;
         leftSide = Camera.main.ScreenToWorldPoint(Vector3.zero).y;
         rightSide = -leftSide;
+        sr.sprite = defaultSprite; 
         movingOnToScreen = true;
 
     }
@@ -221,7 +224,7 @@ public class EnemyBehaviour : MonoBehaviour {
     }
 
     //called by keyframe event in the animation
-    public void FinishExplode() {
+    public virtual void FinishExplode() {
         if (killedByPlayer) {
             PlayerBehaviour playerScript = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
             playerScript.AddToScore(BASE_SCORE * (type + 1));

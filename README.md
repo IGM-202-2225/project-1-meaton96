@@ -32,17 +32,32 @@ Fight your way through hoards of enemy ships that are attacking your home world.
 ## Your Additions
 
 Documentation:
-Player movement: as above, when coming into contact with edges of the screen player movement is halted
+-   Player movement: as above, when coming into contact with edges of the screen player movement is halted
+-   Player has a healthbar and lives, when your health runs out you will respawn at the bottom center of the screen and will be immune for 3 seconds
+-   Player shooting delay: there is a time delay between allowing the player to shoot, starting at .2 seconds, this is done with a simple timer float by increasing it by Time.deltaTime
+-   reaching level 10 will spawn a boss. Defeating the boss will end the game, A player running out of lives will end the game.
 
-Player has a healthbar and lives, when your health runs out you will respawn at the bottom center of the screen and will be immune for 3 seconds
+v1.0.1 additions
+-   bug fixes - see Known Issues
+-   improved enemy spawning
+-   Added easy mode (Gain 100 coins at the start of every level)
 
-Player shooting delay: there is a time delay between allowing the player to shoot, starting at .2 seconds, this is done with a simple timer float by increasing it by Time.deltaTime
+v1.0.2
+-   bug fixes
 
-reaching level 10 will spawn a boss. Defeating the boss will end the game, A player running out of lives will end the game.
-
+v1.0.3
+-   Changed how armor scaled from addative damage reduction to percent damage
+-   Made armor required to kill the final boss - boss does 100 damage with each bullet
+-   Changed the boss's bullet sprite to a red missile to indicate the increased danger from its bullets
+-   Added an additional 10 waves of enemies before spawning a second boss
+-   Added a pause and confirmation window between levels to give the player a break
 
 Enemy types:
 currently 5 simple enemy types, each type has increasing amount of health, damage, and bullet amounts
+
+1 boss enemy that uses 1 of 2 abilities, chosen randomly
+-   wave of bombs that cover the screen, bombs explode after 6 seconds
+-   waves of bullets fired in an arc
 
 ## Sources
 
@@ -53,9 +68,14 @@ currently 5 simple enemy types, each type has increasing amount of health, damag
 
 ## Known Issues
 
-low level enemies that take a large amount of damage from a bullet are sometimes not removed from the scene. The enemy is dead and collisions stop but the sprite is still rendered
+-   game doesn't actually end when the boss dies (fixed v1.0.1)
+-   Unable to exit the rules screen that is on the main menu (fixed v1.0.1)
+-   Hardest enemies were not spawning (fixed v1.0.1)
+-   Bosses bullets do 0 damage!! (fixed v1.0.3)
+-   Enemies remaining text is not at the top of the screen due to the different aspect ratio in the Unity web player (fixed v1.0.2)
+-   going into full screen mode on the web build breaks the shop
 
 ### Requirements not completed
 
-_If you did not complete a project requirement, notate that here_
+None
 

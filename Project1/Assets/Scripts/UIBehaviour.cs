@@ -16,6 +16,8 @@ public class UIBehaviour : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI missileText;
     [SerializeField] private GameController gameController;
     [SerializeField] private GameObject bossHealthBarBg, bossHealthBar;
+    [SerializeField] private GameObject endLevelPauseBg;
+    [SerializeField] private TextMeshProUGUI endLevelMessageText;
     private bool bossWave = false;
     private PlayerBehaviour playerScript;
     private bool infoDisplayed;
@@ -24,7 +26,20 @@ public class UIBehaviour : MonoBehaviour {
     void Start() {
         infoDisplayed = infoText.IsActive();
         playerScript = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
+        enemiesRemainingText.gameObject.transform.position = new Vector3(enemiesRemainingText.gameObject.transform.position.x,
+            Camera.main.WorldToScreenPoint(Vector3.zero).y * 2 -100, 0f); 
 
+    }
+    public void PauseBetweenRounds() {
+        Time.timeScale = 0;
+
+        endLevelMessageText.text = "completed level " + gameController.levelNumber + "!";
+        endLevelPauseBg.SetActive(true);
+        
+    }
+    public void StartNextRound() {
+        Time.timeScale = 1;
+        endLevelPauseBg.SetActive(false);
     }
 
     // Update is called once per frame

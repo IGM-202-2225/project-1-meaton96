@@ -6,10 +6,11 @@ using UnityEngine.SceneManagement;
 public class MainMenuBehaviour : MonoBehaviour
 {
     [SerializeField] private GameObject rules;
+    private DataTransferBehaviour dataTransfer;
     // Start is called before the first frame update
     void Start()
     {
-        
+        dataTransfer = GameObject.FindWithTag("Data").GetComponent<DataTransferBehaviour>();
     }
 
     // Update is called once per frame
@@ -25,5 +26,11 @@ public class MainMenuBehaviour : MonoBehaviour
     }
     public void DisplayRules() {
         rules.SetActive(true);
+    }
+    public void ExitRules() {
+        rules.SetActive(false);
+    }
+    public void ToggleEasyMode() {
+        dataTransfer.easyMode = !dataTransfer.easyMode;
     }
 }
