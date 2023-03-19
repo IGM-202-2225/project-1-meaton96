@@ -27,7 +27,7 @@ public class UIBehaviour : MonoBehaviour {
         infoDisplayed = infoText.IsActive();
         playerScript = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
         enemiesRemainingText.gameObject.transform.position = new Vector3(enemiesRemainingText.gameObject.transform.position.x,
-            Camera.main.WorldToScreenPoint(Vector3.zero).y * 2 -100, 0f); 
+            Camera.main.WorldToScreenPoint(Vector3.zero).y * 2 - 100, 0f);
 
     }
     public void PauseBetweenRounds() {
@@ -35,7 +35,7 @@ public class UIBehaviour : MonoBehaviour {
 
         endLevelMessageText.text = "completed level " + gameController.levelNumber + "!";
         endLevelPauseBg.SetActive(true);
-        
+
     }
     public void StartNextRound() {
         Time.timeScale = 1;

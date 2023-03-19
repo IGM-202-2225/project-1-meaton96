@@ -7,7 +7,7 @@ public class ShopBehaviour : MonoBehaviour {
     [SerializeField] public PlayerBehaviour playerScript;           //player pointer
     [SerializeField] private GameObject shopItemPrefab;             //prefab for making an item in the shop
     [SerializeField] private GameObject pauseCanvas;                
-    private GameObject[] shopItems;                                 //holds all the current shop items  
+    public GameObject[] shopItems = new GameObject[6];                                 //holds all the current shop items  
     public int shoppingCartAmount;                                 //holds total cost of all upgrades selected for purchase
     private float SHOP_ITEM_X = 0;
     private float SHOP_ITEM_START_Y = 95, SHOP_ITEM_OFFSET_Y = 120;
@@ -16,7 +16,6 @@ public class ShopBehaviour : MonoBehaviour {
     
     //initialize shop items
     public void Init() {
-        shopItems = new GameObject[6];
         Vector3 dimensions = Camera.main.WorldToScreenPoint(Vector3.zero);
         SHOP_ITEM_X = dimensions.x / 1.5f;
 
@@ -25,11 +24,9 @@ public class ShopBehaviour : MonoBehaviour {
         SHOP_ITEM_OFFSET_Y = 300f;
 
 
-        //working on arranging shop items
-
-        Vector3 pos;
+        //Vector3 pos;
         //distribute new shop items across the screen
-        for (int x = 0; x < shopItems.Length; x++) {
+        /*for (int x = 0; x < shopItems.Length; x++) {
             if (x < 3) {
                 pos = new Vector3(-SHOP_ITEM_X, SHOP_ITEM_START_Y - SHOP_ITEM_OFFSET_Y * x, 0f);
             }
@@ -39,6 +36,9 @@ public class ShopBehaviour : MonoBehaviour {
             shopItems[x] = Instantiate(shopItemPrefab, pos, Quaternion.identity);
             shopItems[x].transform.SetParent(transform, false);
 
+            
+        }*/
+        for (int x = 0; x < shopItems.Length; x++) {
             UpgradeBarBehaviour ubb = shopItems[x].GetComponent<UpgradeBarBehaviour>();
             //set cost, id, and pass it the shop behaviour script  for each shop item
             ubb.SetCostPerTick(x + 1);
@@ -46,6 +46,7 @@ public class ShopBehaviour : MonoBehaviour {
             ubb.SetShopScript(this);
         }
     }
+    
     //called when the shop is pulled up
     //OnEnable and OnVisable didn't work so manually call this when shop
     public void OnShopShow() {

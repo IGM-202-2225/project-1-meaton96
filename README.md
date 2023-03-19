@@ -74,6 +74,7 @@ currently 5 simple enemy types, each type has increasing amount of health, damag
 -   Bosses bullets do 0 damage!! (fixed v1.0.3)
 -   Enemies remaining text is not at the top of the screen due to the different aspect ratio in the Unity web player (fixed v1.0.2)
 -   going into full screen mode on the web build breaks the shop
+- Shop items no displaying correctly (fixed v1.0.4)
 
 ### Requirements not completed
 
